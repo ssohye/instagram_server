@@ -16,7 +16,7 @@ public class file_client {
         filechoose choice= new filechoose();
         String filename= choice.jFileChooserUtil();
         try{
-            socket = new Socket("localhost", 8080); //서버에 접속
+            socket = new Socket("175.112.14.58", 8080); //서버에 접속
 
         }catch(IOException e){
             System.out.println("It seems like There is no response from Server");
