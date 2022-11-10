@@ -1,12 +1,12 @@
 package filetranfer;
 
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 public class file_server {
+
 
     private static class ConnectThread extends Thread
     {
@@ -62,9 +62,13 @@ public class file_server {
     {
         Socket socket;
         int id;
-        String fileName;
+
+        String filesavepath="C:\\Users\\Administrator\\IdeaProjects\\instagram_server\\src\\filetranfer\\";
+
         FileOutputStream fileOutput = null;
         DataInputStream dataInput = null;
+
+        InputStream os =null;
         byte[] buf = null;
         BufferedInputStream bufferdInput = null; //input 속도 향상을 위한 BufferedInputStream
 
@@ -75,19 +79,37 @@ public class file_server {
             this.id = id;
         }
 
+        public String getServerDateTime(){
+            String DateTime=null;
+            LocalTime now = LocalTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH_mm_ss");
+            DateTime = now.format(formatter);
+            return DateTime;
+
+        }
+
 
 
         @Override
         public void run ()
         {
             try {
-                dataInput = new DataInputStream(socket.getInputStream()); //송신측에서 연결요청시 accept
+                os=socket.getInputStream();
+                dataInput = new DataInputStream(os); //송신측에서 연결요청시 accept
+
                 // 메소드에서 송신측과
                 // 연결을 위한 연결소켓생성
                 int totalSize = dataInput.readInt();       //전송받을 파일 사이즈 수신및 변수에 저장
                 System.out.println(totalSize);  //수신 파일 사이즈 콘솔출력
+                String filetype=null; //파일 확장자 변수
+                byte[] filetype_inbyte= new byte[20];
+                os.read(filetype_inbyte); //파일 타입 송신자로부터 수신
+                filetype=new String(filetype_inbyte);
+                filetype=filetype.trim();
+                System.out.println("file type:"+filetype);
+                String fileName = getServerDateTime()+filetype;
                 buf = new byte[104857600];      //100MB 단위로 파일을 쓰기 위한 byte타입 배열
-                fileOutput = new FileOutputStream(fileName, false);
+                fileOutput = new FileOutputStream(filesavepath+fileName, false);
                 bufferdInput = new BufferedInputStream(dataInput);
                 int i = 0;  //buf 배열 인덱스용 변수
 
@@ -115,7 +137,9 @@ public class file_server {
                     fileOutput.write(buf);  //파일에 write
                 }//if문
                 fileOutput.flush();
+                System.out.println("file receive complete");
             } catch (IOException e) {
+                System.out.println("error occurred at file save phase");
                 e.printStackTrace();
             } finally {
                 try {
@@ -125,9 +149,11 @@ public class file_server {
                         dataInput.close();
                     if (fileOutput != null)
                         fileOutput.close();
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+
             }//finally
         }
     }
