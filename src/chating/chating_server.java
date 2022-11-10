@@ -49,6 +49,7 @@ public class chating_server {
                 db.newroom(member);
                 //database.database 톡방 schema에 맴버 추가
 
+
                 //메세지 받기
             }
             catch(Exception e){

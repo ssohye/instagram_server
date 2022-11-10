@@ -27,7 +27,7 @@ public class chating_client {
 
     }
 
-    public void chat_message(){
+    public void chat_message(String){
 
     }
 }
