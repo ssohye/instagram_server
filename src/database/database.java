@@ -95,14 +95,7 @@ public class database {
 
     public Boolean register(String idclient, String pwdclient) {
         String sq ="INSERT INTO User (email, password) VALUE(?,?);";
-        String checkduplicate = "SELECT email from User Where email=?;";
         try {
-            preparedstatement =con.prepareStatement(checkduplicate);
-            preparedstatement.setString(1,idclient);
-            result= preparedstatement.executeQuery();
-            result.last();
-            int resultnum=result.getRow();
-            if(resultnum==0){
                 preparedstatement =con.prepareStatement(sq);
                 preparedstatement.setString(1,idclient);
                 preparedstatement.setString(2,pwdclient);
@@ -114,10 +107,6 @@ public class database {
                     System.out.println("회원가입성공");
                     return true;
                 }
-            }else{
-                System.out.println("중복된 이메일 존재");
-                return false;
-            }
 
         }catch (Exception e){
             System.out.println(e);
@@ -125,6 +114,29 @@ public class database {
         return false;
 
 
+    }
+
+    public boolean duplicateemailcheck(String id){
+        String sq ="select email from user where email=?;";
+        try {
+            preparedstatement =con.prepareStatement(sq);
+            preparedstatement.setString(1,id);
+            result=preparedstatement.executeQuery();
+            int count=0;
+            while (result.next()){
+                count=result.getRow();
+            }
+            if(count==0){
+                return true;
+            }
+            else{
+                return false;
+            }
+
+        }catch (Exception e){
+            System.out.println(e);
+        }
+        return false;
     }
 
     public int newroom(HashSet<String> member){

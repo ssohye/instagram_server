@@ -115,9 +115,16 @@ public class manager {
                     password=br.readLine();
                     System.out.println("id:" +id);
                     System.out.println("password: "+password);
-                    if(db.register(id,password)==true){
-                        dos.writeInt(1);
+                    if(db.duplicateemailcheck(id)==true){
+                        if(db.register(id,password)==true){
+                            dos.writeInt(1);
+                        }
                     }
+                    else{
+                        System.out.println("duplicated email");
+                        dos.writeInt(2);
+                    }
+
 
                 } else if (statuscode==200) { // if login
                     System.out.println("New Login Requests");
