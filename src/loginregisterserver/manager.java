@@ -136,6 +136,14 @@ public class manager {
                         dos.writeInt(200);
                     }
 
+                } else if (statuscode==300) {//if logout
+                    System.out.println("New Logout Requests");
+                    String user_id=br.readLine();
+                    if(db.logout(user_id)==true){
+                        System.out.println("logout complete");
+                    }else{
+                        System.out.println("error occured when logout");
+                    }
                 }
             }catch (Exception e) {
                 System.out.println(e);
