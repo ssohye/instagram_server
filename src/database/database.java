@@ -117,7 +117,7 @@ public class database {
     }
 
     public boolean duplicateemailcheck(String id){
-        String sq ="select email from user where email=?;";
+        String sq ="select email from User where email=?;";
         try {
             preparedstatement =con.prepareStatement(sq);
             preparedstatement.setString(1,id);
