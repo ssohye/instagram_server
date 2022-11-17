@@ -139,6 +139,20 @@ public class database {
         return false;
     }
 
+    public boolean logout(String user_id){
+        String sq ="update online_user set session_id=-1 where user_id=?;";
+        try {
+            preparedstatement =con.prepareStatement(sq);
+            preparedstatement.setString(1,user_id);
+            preparedstatement.executeUpdate();
+            return true;
+
+        }catch (Exception e){
+            System.out.println(e);
+        }
+        return false;
+    }
+
     public int newroom(HashSet<String> member){
 
         int chat_id=0;
