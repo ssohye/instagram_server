@@ -32,11 +32,9 @@ public class chating_server {
         public void run(){
             try{
                 var in = sock.getInputStream();
-                //DataInputStream dis = new DataInputStream(in);
-                //int total_size = dis.readInt();
+                var out = sock.getOutputStream();
 
                 ObjectInputStream ois = new ObjectInputStream(in);
-                //byte[] byte_member = new byte[total_size];
                 this.member = (HashSet<String>) ois.readObject();
 
                 Iterator iter = member.iterator();
@@ -46,8 +44,16 @@ public class chating_server {
                 //맴버 받기
 
                 database db = new database();
-                db.newroom(member);
-                //database.database 톡방 schema에 맴버 추가
+                int char_id = db.newroom(member);
+                //database.database 톡방 schema에 맴버
+
+                System.out.println(char_id);
+                ObjectOutputStream oos = new ObjectOutputStream(out);
+
+                oos.writeObject(char_id);
+
+                //채팅방 id 보내기
+
 
                 //메세지 받기
             }
