@@ -148,7 +148,10 @@ public class database {
             preparedstatement =con.prepareStatement(find_user_id);
             preparedstatement.setString(1,user_id);
             result=preparedstatement.executeQuery();
-            id=result.getInt(1);
+            while (result.next()){
+                id=result.getInt(1);
+            }
+
             preparedstatement =con.prepareStatement(sq);
             preparedstatement.setInt(1,id);
             preparedstatement.executeUpdate();
