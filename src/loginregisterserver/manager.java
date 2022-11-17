@@ -6,6 +6,7 @@ import java.net.Socket;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ExecutionException;
+import database.*;
 
 public class manager {
 
@@ -13,6 +14,7 @@ public class manager {
     private static class ConnectThread extends Thread
     {
         ServerSocket serverSocket;
+
         int count = 1;
 
         ConnectThread (ServerSocket serverSocket) //생성자를 통해 서버소켓을 받음
@@ -45,7 +47,7 @@ public class manager {
     public static void main(String[] args){
         ServerSocket serverSocket = null;
         try
-        {   // 서버소켓을 생성, 8080 포트와 binding
+        {   // 서버소켓을 생성, 9898 포트와 binding
             serverSocket = new ServerSocket(9898); // 생성자 내부에 bind()가 있고, bind() 내부에 listen() 있음
             ConnectThread connectThread = new ConnectThread(serverSocket); // 서버소켓을 connectThread에 넘겨줌
             connectThread.start(); // connectThread 시작
@@ -65,7 +67,13 @@ public class manager {
         Socket socket;
         int id;
 
-        InputStream os =null;
+        InputStream is =null;
+        DataInputStream dis=null;
+        DataOutputStream dos=null;
+
+        BufferedReader br=null;
+
+        OutputStream os =null;
         byte[] buf = null;
 
 
@@ -91,7 +99,35 @@ public class manager {
         public void run ()
         {
             try {
-                os = socket.getInputStream();
+                database db= new database();
+                is = socket.getInputStream();
+                os = socket.getOutputStream();
+                dis= new DataInputStream(is);
+                dos= new DataOutputStream(os);
+                br = new BufferedReader(new InputStreamReader(is));
+
+                String id=null;
+                String password=null;
+                int statuscode= dis.readInt();
+                if(statuscode==100) {//if register
+                    System.out.println("NEW Register Requests");
+                    id=br.readLine();
+                    password=br.readLine();
+                    System.out.println("id:" +id);
+                    System.out.println("password: "+password);
+                    if(db.register(id,password)==true){
+                        dos.writeInt(1);
+                    }
+
+                } else if (statuscode==200) { // if login
+                    System.out.println("New Login Requests");
+                    id=br.readLine();
+                    password=br.readLine();
+                    if(db.logincheck(id,password)==true){
+                        dos.writeInt(1);
+                    }
+
+                }
             }catch (Exception e) {
                 System.out.println(e);
             }
