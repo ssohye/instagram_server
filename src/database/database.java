@@ -141,9 +141,16 @@ public class database {
 
     public boolean logout(String user_id){
         String sq ="update online_user set session_id=-1 where user_id=?;";
+        String find_user_id="select user_id from User where email=?;";
+        int id=0;
         try {
-            preparedstatement =con.prepareStatement(sq);
+
+            preparedstatement =con.prepareStatement(find_user_id);
             preparedstatement.setString(1,user_id);
+            result=preparedstatement.executeQuery();
+            id=result.getInt(1);
+            preparedstatement =con.prepareStatement(sq);
+            preparedstatement.setInt(1,id);
             preparedstatement.executeUpdate();
             return true;
 
