@@ -95,18 +95,30 @@ public class database {
 
     public Boolean register(String idclient, String pwdclient) {
         String sq ="INSERT INTO User (email, password) VALUE(?,?);";
+        String checkduplicate = "SELECT email from User Where email=?;";
         try {
-            preparedstatement =con.prepareStatement(sq);
+            preparedstatement =con.prepareStatement(checkduplicate);
             preparedstatement.setString(1,idclient);
-            preparedstatement.setString(2,pwdclient);
-            int count = preparedstatement.executeUpdate();
-            if (count == 0) {
-                System.out.println("데이터 입력 실패");
+            result= preparedstatement.executeQuery();
+            result.last();
+            int resultnum=result.getRow();
+            if(resultnum==0){
+                preparedstatement =con.prepareStatement(sq);
+                preparedstatement.setString(1,idclient);
+                preparedstatement.setString(2,pwdclient);
+                int count = preparedstatement.executeUpdate();
+                if (count == 0) {
+                    System.out.println("데이터 입력 실패");
+                    return false;
+                } else {
+                    System.out.println("회원가입성공");
+                    return true;
+                }
+            }else{
+                System.out.println("중복된 이메일 존재");
                 return false;
-            } else {
-                System.out.println("회원가입성공");
-                return true;
             }
+
         }catch (Exception e){
             System.out.println(e);
         }

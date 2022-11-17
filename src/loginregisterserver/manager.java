@@ -123,8 +123,10 @@ public class manager {
                     System.out.println("New Login Requests");
                     id=br.readLine();
                     password=br.readLine();
-                    if(db.logincheck(id,password)==true){
+                    if(db.logincheck(id,password)==true) {
                         dos.writeInt(1);
+                    }else{
+                        dos.writeInt(200);
                     }
 
                 }
