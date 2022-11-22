@@ -5,13 +5,23 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import database.*;
+
 public class chating_server {
 
-
+    public static ArrayList<connection> connection_list = new ArrayList<connection>();
+    public static database db=  new database();
     private static class ConnectThread extends Thread
     {
         ServerSocket serverSocket;
         int count = 1;
+
+        //조태완이 참가한 채팅방의 고유번호(md5) 다 검색을 해 db에서
+       //채팅방의 수만큼 소켓을 저장하는 배열을 만들어야해
+        //채팅방 고유번호 리스트
+
+
 
         ConnectThread (ServerSocket serverSocket) //생성자를 통해 서버소켓을 받음
         {
@@ -86,28 +96,73 @@ public class chating_server {
         public void run ()
         {
             protocol content = null;
+
             try {
-                 ObjectInputStream ois= new ObjectInputStream(socket.getInputStream());
-                 content= (protocol) ois.readObject();
-                 if(content.getTypeofrequest()==1){
+                 InputStream is = socket.getInputStream();
+                 ObjectInputStream ois= new ObjectInputStream(is);
+                 DataInputStream dis = new DataInputStream(is);
+                 OutputStream os = socket.getOutputStream();
+                 ObjectOutputStream oos = new ObjectOutputStream(os);
 
-                 }else if(content.getTypeofrequest()==2){
+                 int user_id= dis.readInt();
+                 String room_id=null;
 
-                } else if (content.getTypeofrequest()==3){
+                 //user_id 이용해서 속해 있는 room_id를 db에서 찾은후 커넥션 리스트에 등록하기
 
-                } else if (content.getTypeofrequest()==4) {
 
-                }else{
-                    System.out.println("잘못된 요청입니다.");
+
+
+                while((content = (protocol)ois.readObject()) != null ) {
+                    if(content.getTypeofrequest()==1){ //새 방 만들기 요청
+                        user_id=content.getSender();
+                        if(db.newroom(content)==true){
+                            System.out.println("새 방 만들기 성공");
+                        }else{
+                            System.out.println("새 방 만들기 실패");
+                        }
+
+                    }else if(content.getTypeofrequest()==2){ //방에 유저 초대
+
+                    } else if (content.getTypeofrequest()==3){ //방 제거
+
+                    } else if (content.getTypeofrequest()==4) { //메시지 보내기
+                        room_id=content.getRoomnumber();
+                        connection tmp = new connection(room_id,user_id,socket);
+                        if(connection_list.contains(tmp)){
+                            System.out.println("이미 연결정보에 등록됨");
+                            for(int i=0;i<connection_list.size();i++){
+                                if(connection_list.get(i).room_id.equals(room_id)){
+                                    System.out.println("방에 있는 사람들에게 메세지 전송");
+                                    oos.writeObject(content);
+                                    oos.flush();
+                                }
+                            }
+                        }else{
+                            connection_list.add(tmp);
+                            System.out.println("연결정보에 등록됨");
+                            for(int i=0;i<connection_list.size();i++){
+                                if(connection_list.get(i).room_id.equals(room_id)){
+                                    System.out.println("방에 있는 사람들에게 메세지 전송");
+                                    oos.writeObject(content);
+                                    oos.flush();
+                                }
+                            }
+                        }
+                    }else{
+                        System.out.println("잘못된 요청입니다.");
+                    }
+
+
                 }
 
-                ois.close();
+
+                 ois.close();
                  socket.close();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
 
-            }//finally
+            }
         }
     }
 

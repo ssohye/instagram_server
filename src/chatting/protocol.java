@@ -2,11 +2,10 @@ package chatting;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class protocol implements Serializable {
     private int typeofrequest;
-    private ArrayList<String> list = new ArrayList<>();
+    private ArrayList<Integer> list = new ArrayList<>();
     private int sender;
     private String roomnumber;
     private String messege;
@@ -18,21 +17,24 @@ public class protocol implements Serializable {
 
     }
     // 방 생성인 경우
-    public protocol(int typeofrequest, ArrayList<String> list){
+    public protocol(int typeofrequest, int sender, ArrayList<Integer> list){
+        this.sender = sender;
         this.typeofrequest = typeofrequest;
         this.list = list;
     }
 
     // 방 초대
-    public protocol(int typeofrequest, String roomnumber, ArrayList<String> list){
+    public protocol(int typeofrequest, int sender, String roomnumber, ArrayList<Integer> list){
         this.typeofrequest = typeofrequest;
+        this.sender = sender;
         this.roomnumber = roomnumber;
         this.list = list;
     }
 
     // 방 제거
-    public protocol(int typeofrequest, String roomnumber){
+    public protocol(int typeofrequest, int sender, String roomnumber){
         this.typeofrequest = typeofrequest;
+        this.sender = sender;
         this.roomnumber = roomnumber;
     }
 
@@ -51,7 +53,7 @@ public class protocol implements Serializable {
     public int getTypeofrequest() {
         return typeofrequest;
     }
-    public ArrayList<String> getList() {
+    public ArrayList<Integer> getList() {
         return list;
     }
     public int getSender() {
@@ -72,5 +74,4 @@ public class protocol implements Serializable {
     public String getFile_path() {
         return file_path;
     }
-
 }
