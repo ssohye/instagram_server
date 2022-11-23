@@ -193,8 +193,9 @@ public class chating_server implements Runnable {
                         int update_user_id = content.getSender();
                         ArrayList<String> room_list=db.get_room_list(update_user_id);
                         protocol response = new protocol(6,room_list);
-                        oos.writeObject(response);
-                        oos.flush();
+                        ObjectOutputStream tmp_oos= new ObjectOutputStream(os);
+                        tmp_oos.writeObject(response);
+                        tmp_oos.flush();
 
                     } else{
                         System.out.println("잘못된 요청입니다.");
