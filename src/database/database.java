@@ -29,6 +29,22 @@ public class database {
         }
     }
 
+    public int get_user_id(String id){
+        int user_id = 0;
+        try{
+            String sql = "select user_id from User where email = ?;";
+            preparedstatement = con.prepareStatement(sql);
+            preparedstatement.setString(1, id);
+            result = preparedstatement.executeQuery();
+            if(result.next()){
+                user_id = result.getInt("user_id");
+            }
+        }catch(Exception e){
+            System.out.println(e);
+        }
+        return user_id;
+    }
+
     public Boolean logincheck(String idclient, String pwdclient) {
         String sq = "select user_id,email,password from User";
         String makeuseronline ="INSERT INTO online_user (session_id,user_id) VALUE(1,?);";
@@ -142,23 +158,20 @@ public class database {
         return false;
     }
 
-    public boolean logout(String user_id){
+    public boolean logout(int user_id){
         String sq ="update online_user set session_id=-1 where user_id=?;";
-        String find_user_id="select user_id from User where email=?;";
-        int id=0;
         try {
-
-            preparedstatement =con.prepareStatement(find_user_id);
-            preparedstatement.setString(1,user_id);
-            result=preparedstatement.executeQuery();
-            while (result.next()){
-                id=result.getInt(1);
+            preparedstatement =con.prepareStatement(sq);
+            preparedstatement.setInt(1,user_id);
+            int count = preparedstatement.executeUpdate();
+            if (count == 0) {
+                System.out.println("로그아웃 실패");
+                return false;
+            } else {
+                System.out.println("로그아웃 성공");
+                return true;
             }
 
-            preparedstatement =con.prepareStatement(sq);
-            preparedstatement.setInt(1,id);
-            preparedstatement.executeUpdate();
-            return true;
 
         }catch (Exception e){
             System.out.println(e);
