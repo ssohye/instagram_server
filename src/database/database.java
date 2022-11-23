@@ -30,27 +30,6 @@ public class database {
         }
     }
 
-    public ArrayList<String> get_room_list(int user_id){
-        System.out.println("get_room_list running");
-        ArrayList<String> room_list = new ArrayList<String>();
-        try{
-            String sql = "select chat_id from chat_manager where member = ?";
-            preparedstatement = con.prepareStatement(sql);
-            preparedstatement.setInt(1, user_id);
-            result = preparedstatement.executeQuery();
-            while(result.next()){
-                room_list.add(result.getString(1));
-            }
-        }
-        catch(Exception e){
-            System.out.println(e);
-        }
-        for(int i=0; i<room_list.size(); i++){
-            System.out.println(room_list.get(i));
-        }
-        return room_list;
-    }
-
     public int get_user_id(String id){
         int user_id = 0;
         try{
@@ -137,17 +116,17 @@ public class database {
     public Boolean register(String idclient, String pwdclient) {
         String sq ="INSERT INTO User (email, password) VALUE(?,?);";
         try {
-                preparedstatement =con.prepareStatement(sq);
-                preparedstatement.setString(1,idclient);
-                preparedstatement.setString(2,pwdclient);
-                int count = preparedstatement.executeUpdate();
-                if (count == 0) {
-                    System.out.println("데이터 입력 실패");
-                    return false;
-                } else {
-                    System.out.println("회원가입성공");
-                    return true;
-                }
+            preparedstatement =con.prepareStatement(sq);
+            preparedstatement.setString(1,idclient);
+            preparedstatement.setString(2,pwdclient);
+            int count = preparedstatement.executeUpdate();
+            if (count == 0) {
+                System.out.println("데이터 입력 실패");
+                return false;
+            } else {
+                System.out.println("회원가입성공");
+                return true;
+            }
 
         }catch (Exception e){
             System.out.println(e);
@@ -238,7 +217,6 @@ public class database {
         ArrayList<Integer> user_list= tmp.getList();
         String room_id=getroom_id(user_list);
         String folder_path=makedir(room_id);
-        System.out.println("folder_path : "+folder_path);
         try{
             preparedstatement =con.prepareStatement(sql);
             for(int i=0; i<user_list.size();i++){
@@ -249,7 +227,6 @@ public class database {
             preparedstatement = con.prepareStatement(sql2);
             preparedstatement.setString(1,room_id);
             preparedstatement.setString(2,folder_path);
-            preparedstatement.executeUpdate();
 
             return true;
 
@@ -261,27 +238,27 @@ public class database {
     }
 
 
-        public String makedir(String room_id){
+    public String makedir(String room_id){
 
-            String path = "../../chatting_data/"+room_id;
-            File Folder = new File(path);
+        String path = "../../chatting_data/"+room_id;
+        File Folder = new File(path);
 
-            // 해당 디렉토리가 없을경우 디렉토리를 생성합니다.
-            if (!Folder.exists()) {
-                try{
-                    Folder.mkdir(); //폴더 생성합니다.
-                    System.out.println("폴더가 생성되었습니다.");
-                    return Folder.getAbsolutePath();
-                }
-                catch(Exception e){
-                    e.getStackTrace();
-                }
-            }else {
-                System.out.println("이미 폴더가 생성되어 있습니다.");
-                return null;
+        // 해당 디렉토리가 없을경우 디렉토리를 생성합니다.
+        if (!Folder.exists()) {
+            try{
+                Folder.mkdir(); //폴더 생성합니다.
+                System.out.println("폴더가 생성되었습니다.");
+                return Folder.getAbsolutePath();
             }
+            catch(Exception e){
+                e.getStackTrace();
+            }
+        }else {
+            System.out.println("이미 폴더가 생성되어 있습니다.");
             return null;
         }
+        return null;
+    }
 
 
 
