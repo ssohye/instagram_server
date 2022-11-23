@@ -115,6 +115,7 @@ public class chating_server implements Runnable {
                 else{
                     for(int i=0; i<room_id_list.size(); i++){
                         room_id=room_id_list.get(i);
+                        System.out.println("유저가 속한 방 : "+room_id);
                         connection tmp = new connection(room_id,user_id,socket);
                         if(connection_list.contains(tmp)){
 
@@ -157,7 +158,7 @@ public class chating_server implements Runnable {
                             }
                         }else{
 
-                            System.out.println("이미 연결정보에 등록됨");
+                            System.out.println("새로 연결정보에 등록됨");
                             for(int i=0;i<connection_list.size();i++){
                                 if(connection_list.get(i).room_id.equals(room_id)&&connection_list.get(i).user_id!=user_id){
                                     System.out.println("방에 있는 사람들에게 메세지 전송");
