@@ -216,6 +216,7 @@ public class database {
         String sql2="insert into chat_table (chat_room_id,chat_file) values (?,?);";
         ArrayList<Integer> user_list= tmp.getList();
         String room_id=getroom_id(user_list);
+        System.out.println("new room_id : "+room_id);
         String folder_path=makedir(room_id);
         try{
             preparedstatement =con.prepareStatement(sql);

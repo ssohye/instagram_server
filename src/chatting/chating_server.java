@@ -115,6 +115,7 @@ public class chating_server implements Runnable {
                 else{
                     for(int i=0; i<room_id_list.size(); i++){
                         room_id=room_id_list.get(i);
+                        System.out.println("유저가 속한 방 : "+room_id);
                         connection tmp = new connection(room_id,user_id,socket);
                         if(connection_list.contains(tmp)){
 
