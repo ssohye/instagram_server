@@ -134,7 +134,9 @@ public class chating_server implements Runnable {
                      }
                  }
 
-                 while ((content = (protocol) ois.readObject()) != null) {
+                 while (true) {
+                     ois = new ObjectInputStream(is);
+                     content = (protocol) ois.readObject();
                      if (content.getTypeofrequest() == 1) { //새 방 만들기 요청
                          if (db.newroom(content) == true) { //db에 방만들기 요청
                              ArrayList<Integer> new_user_list = content.getList(); //새로 만들어진 방에 들어갈 유저들의 id
@@ -199,11 +201,10 @@ public class chating_server implements Runnable {
                      } else {
                          System.out.println("잘못된 요청입니다.");
                      }
-                     is = socket.getInputStream();
-                     ois= new ObjectInputStream(is);
+
                  }
-                     ois.close();
-                     socket.close();
+                     //ois.close();
+                     //socket.close();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
