@@ -8,7 +8,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ExecutionException;
 import database.*;
 
-public class manager {
+public class manager implements Runnable {
 
 
     private static class ConnectThread extends Thread
@@ -43,8 +43,8 @@ public class manager {
             }
         }
     }
-
-    public static void main(String[] args){
+    @Override
+    public void run() {
         ServerSocket serverSocket = null;
         try
         {   // 서버소켓을 생성, 9898 포트와 binding
