@@ -13,6 +13,8 @@ public class protocol implements Serializable {
     private boolean file_exist;
     private String file_path;
 
+    private ArrayList<String> roomlist = new ArrayList<>();
+
     public protocol(){
 
     }
@@ -47,6 +49,17 @@ public class protocol implements Serializable {
         this.time = time;
         this.file_exist = file_exist;
         this.file_path = file_path;
+    }
+
+    //방 목록 업데이트 요청
+    public protocol(int typeofrequest,int sender){
+        this.sender=sender;
+        this.typeofrequest= typeofrequest;
+    }
+
+    public protocol(int typeofrequest,ArrayList<String> roomlist){
+        this.typeofrequest = typeofrequest;
+        this.roomlist = roomlist;
     }
 
     //make getter function

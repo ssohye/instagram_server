@@ -30,6 +30,23 @@ public class database {
         }
     }
 
+    public ArrayList<String> get_room_list(int user_id){
+        ArrayList<String> room_list = new ArrayList<String>();
+        try{
+            String sql = "select chat_id from chat_manager where member = ?";
+            preparedstatement = con.prepareStatement(sql);
+            preparedstatement.setInt(1, user_id);
+            result = preparedstatement.executeQuery();
+            while(result.next()){
+                room_list.add(result.getString(1));
+            }
+        }
+        catch(Exception e){
+            System.out.println(e);
+        }
+        return room_list;
+    }
+
     public int get_user_id(String id){
         int user_id = 0;
         try{
@@ -217,6 +234,7 @@ public class database {
         ArrayList<Integer> user_list= tmp.getList();
         String room_id=getroom_id(user_list);
         String folder_path=makedir(room_id);
+        System.out.println("folder_path : "+folder_path);
         try{
             preparedstatement =con.prepareStatement(sql);
             for(int i=0; i<user_list.size();i++){
@@ -227,6 +245,7 @@ public class database {
             preparedstatement = con.prepareStatement(sql2);
             preparedstatement.setString(1,room_id);
             preparedstatement.setString(2,folder_path);
+            preparedstatement.executeUpdate();
 
             return true;
 
