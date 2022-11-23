@@ -8,7 +8,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import database.*;
 
-public class chating_server {
+public class chating_server implements Runnable {
 
     public static ArrayList<connection> connection_list = new ArrayList<connection>();
     public static database db=  new database();
@@ -49,8 +49,8 @@ public class chating_server {
             }
         }
     }
-
-    public static void main(String[] args){
+    @Override
+    public void run(){
         ServerSocket serverSocket = null;
         try
         {   // 서버소켓을 생성, 25588 포트와 binding

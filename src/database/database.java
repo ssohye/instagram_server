@@ -161,16 +161,16 @@ public class database {
     public boolean logout(int user_id){
         String sq ="update online_user set session_id=-1 where user_id=?;";
         try {
-            preparedstatement =con.prepareStatement(sq);
+            preparedstatement = con.prepareStatement(sq);
             preparedstatement.setInt(1,user_id);
-            preparedstatement.executeQuery();
+            preparedstatement.executeUpdate();
             return true;
-
-
         }catch (Exception e){
             System.out.println(e);
             return false;
         }
+
+
     }
 
     public String getroom_id(ArrayList<Integer> user_list){
