@@ -96,7 +96,6 @@ public class chating_server implements Runnable {
         @Override
         public void run ()
         {
-            protocol content = null;
 
             try {
                  InputStream is = socket.getInputStream();
@@ -136,10 +135,10 @@ public class chating_server implements Runnable {
 
                  while (true) {
                      ois = new ObjectInputStream(is);
-                     content = (protocol) ois.readObject();
-                     if (content.getTypeofrequest() == 1) { //새 방 만들기 요청
-                         if (db.newroom(content) == true) { //db에 방만들기 요청
-                             ArrayList<Integer> new_user_list = content.getList(); //새로 만들어진 방에 들어갈 유저들의 id
+                     protocol p = (protocol) ois.readObject();
+                     if (p.getTypeofrequest() == 1) { //새 방 만들기 요청
+                         if (db.newroom(p) == true) { //db에 방만들기 요청
+                             ArrayList<Integer> new_user_list = p.getList(); //새로 만들어진 방에 들어갈 유저들의 id
                              protocol update_req = new protocol(5, -1); //새로 만들어진 방에 들어갈 유저들에게 새로운 방이 생겼다고 알려주는 요청
                              for (int i = 0; i < new_user_list.size(); i++) {
                                  for (int j = 0; j < online_user_list.size(); j++) {
@@ -158,12 +157,12 @@ public class chating_server implements Runnable {
                              System.out.println("새 방 만들기 실패");
                          }
 
-                     } else if (content.getTypeofrequest() == 2) { //방에 유저 초대
+                     } else if (p.getTypeofrequest() == 2) { //방에 유저 초대
 
-                     } else if (content.getTypeofrequest() == 3) { //방 제거
+                     } else if (p.getTypeofrequest() == 3) { //방 제거
 
-                     } else if (content.getTypeofrequest() == 4) { //메시지 보내기
-                         room_id = content.getRoomnumber();
+                     } else if (p.getTypeofrequest() == 4) { //메시지 보내기
+                         room_id = p.getRoomnumber();
                          connection tmp = new connection(room_id, user_id, socket);
                          if (connection_list.contains(tmp)) {
                              System.out.println("이미 연결정보에 등록됨");
@@ -172,7 +171,7 @@ public class chating_server implements Runnable {
                                      System.out.println("방에 있는 사람들에게 메세지 전송");
                                      Socket temp_socket = connection_list.get(i).socket;
                                      ObjectOutputStream temp_oos = new ObjectOutputStream(temp_socket.getOutputStream());
-                                     temp_oos.writeObject(content);
+                                     temp_oos.writeObject(p);
                                      temp_oos.flush();
                                  }
                              }
@@ -184,14 +183,14 @@ public class chating_server implements Runnable {
                                      System.out.println("방에 있는 사람들에게 메세지 전송");
                                      Socket temp_socket = connection_list.get(i).socket;
                                      ObjectOutputStream temp_oos = new ObjectOutputStream(temp_socket.getOutputStream());
-                                     temp_oos.writeObject(content);
+                                     temp_oos.writeObject(p);
                                      temp_oos.flush();
                                  }
                              }
                          }
-                     } else if (content.getTypeofrequest() == 5) { //방목록 업데이트 요청인경우
-                         System.out.println("방목록 업데이트 요청이 들어옴" + content.getSender());
-                         int update_user_id = content.getSender();
+                     } else if (p.getTypeofrequest() == 5) { //방목록 업데이트 요청인경우
+                         System.out.println("방목록 업데이트 요청이 들어옴" + p.getSender());
+                         int update_user_id = p.getSender();
                          ArrayList<String> room_list = db.get_room_list(update_user_id);
                          protocol response = new protocol(6, room_list);
                          ObjectOutputStream tmp_oos = new ObjectOutputStream(os);
