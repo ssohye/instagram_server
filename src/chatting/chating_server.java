@@ -113,6 +113,7 @@ public class chating_server implements Runnable {
                      System.out.println("이미 서버에 온라인 상태로 등록된 유저.");
                  }else{
                         online_user_list.add(user);
+                        System.out.println("유저: "+user_id+"가 서버에 온라인 상태로 등록되었습니다.");
                  }
 
                  //user_id 이용해서 속해 있는 room_id를 db에서 찾은후 커넥션 리스트에 등록하기
@@ -135,76 +136,72 @@ public class chating_server implements Runnable {
 
 
 
-                 while(true) {
-                     while ((content = (protocol) ois.readObject()) != null) {
-                         if (content.getTypeofrequest() == 1) { //새 방 만들기 요청
-                             if (db.newroom(content) == true) { //db에 방만들기 요청
-                                 ArrayList<Integer> new_user_list = content.getList(); //새로 만들어진 방에 들어갈 유저들의 id
-                                 protocol update_req = new protocol(5, -1); //새로 만들어진 방에 들어갈 유저들에게 새로운 방이 생겼다고 알려주는 요청
-                                 for (int i = 0; i < new_user_list.size(); i++) {
-                                     for (int j = 0; j < online_user_list.size(); j++) {
-                                         if (new_user_list.get(i) == online_user_list.get(j).user_id) {
-                                             Socket tmp_socket = online_user_list.get(j).socket;
-                                             OutputStream tmp_os = tmp_socket.getOutputStream();
-                                             ObjectOutputStream tmp_oos = new ObjectOutputStream(tmp_os);
-                                             tmp_oos.writeObject(update_req);
-                                             tmp_oos.flush();
-                                         }
-                                     }
-                                 }
-                                 System.out.println("새 방 만들기 성공");
-                             } else {
-                                 System.out.println("새 방 만들기 실패");
-                             }
-
-                         } else if (content.getTypeofrequest() == 2) { //방에 유저 초대
-
-                         } else if (content.getTypeofrequest() == 3) { //방 제거
-                             ois.close();
-                             socket.close();
-                         } else if (content.getTypeofrequest() == 4) { //메시지 보내기
-                             room_id = content.getRoomnumber();
-                             connection tmp = new connection(room_id, user_id, socket);
-                             if (connection_list.contains(tmp)) {
-                                 System.out.println("이미 연결정보에 등록됨");
-                                 for (int i = 0; i < connection_list.size(); i++) {
-                                     if (connection_list.get(i).room_id.equals(room_id)) {
-                                         System.out.println("방에 있는 사람들에게 메세지 전송");
-                                         Socket temp_socket = connection_list.get(i).socket;
-                                         ObjectOutputStream temp_oos = new ObjectOutputStream(temp_socket.getOutputStream());
-                                         temp_oos.writeObject(content);
-                                         temp_oos.flush();
-                                     }
-                                 }
-                             } else {
-
-                                 System.out.println("이미 연결정보에 등록됨");
-                                 for (int i = 0; i < connection_list.size(); i++) {
-                                     if (connection_list.get(i).room_id.equals(room_id) && connection_list.get(i).user_id != user_id) {
-                                         System.out.println("방에 있는 사람들에게 메세지 전송");
-                                         Socket temp_socket = connection_list.get(i).socket;
-                                         ObjectOutputStream temp_oos = new ObjectOutputStream(temp_socket.getOutputStream());
-                                         temp_oos.writeObject(content);
-                                         temp_oos.flush();
+                 while ((content = (protocol) ois.readObject()) != null) {
+                     if (content.getTypeofrequest() == 1) { //새 방 만들기 요청
+                         if (db.newroom(content) == true) { //db에 방만들기 요청
+                             ArrayList<Integer> new_user_list = content.getList(); //새로 만들어진 방에 들어갈 유저들의 id
+                             protocol update_req = new protocol(5, -1); //새로 만들어진 방에 들어갈 유저들에게 새로운 방이 생겼다고 알려주는 요청
+                             for (int i = 0; i < new_user_list.size(); i++) {
+                                 for (int j = 0; j < online_user_list.size(); j++) {
+                                     if (new_user_list.get(i) == online_user_list.get(j).user_id) {
+                                         Socket tmp_socket = online_user_list.get(j).socket;
+                                         OutputStream tmp_os = tmp_socket.getOutputStream();
+                                         ObjectOutputStream tmp_oos = new ObjectOutputStream(tmp_os);
+                                         tmp_oos.writeObject(update_req);
+                                         tmp_oos.flush();
                                      }
                                  }
                              }
-                         } else if (content.getTypeofrequest() == 5) { //방목록 업데이트 요청인경우
-                             int update_user_id = content.getSender();
-                             ArrayList<String> room_list = db.get_room_list(update_user_id);
-                             protocol response = new protocol(6, room_list);
-                             ObjectOutputStream tmp_oos = new ObjectOutputStream(os);
-                             tmp_oos.writeObject(response);
-                             tmp_oos.flush();
-
+                             System.out.println("새 방 만들기 성공");
                          } else {
-                             System.out.println("잘못된 요청입니다.");
+                             System.out.println("새 방 만들기 실패");
                          }
+
+                     } else if (content.getTypeofrequest() == 2) { //방에 유저 초대
+
+                     } else if (content.getTypeofrequest() == 3) { //방 제거
+
+                     } else if (content.getTypeofrequest() == 4) { //메시지 보내기
+                         room_id = content.getRoomnumber();
+                         connection tmp = new connection(room_id, user_id, socket);
+                         if (connection_list.contains(tmp)) {
+                             System.out.println("이미 연결정보에 등록됨");
+                             for (int i = 0; i < connection_list.size(); i++) {
+                                 if (connection_list.get(i).room_id.equals(room_id)) {
+                                     System.out.println("방에 있는 사람들에게 메세지 전송");
+                                     Socket temp_socket = connection_list.get(i).socket;
+                                     ObjectOutputStream temp_oos = new ObjectOutputStream(temp_socket.getOutputStream());
+                                     temp_oos.writeObject(content);
+                                     temp_oos.flush();
+                                 }
+                             }
+                         } else {
+
+                             System.out.println("이미 연결정보에 등록됨");
+                             for (int i = 0; i < connection_list.size(); i++) {
+                                 if (connection_list.get(i).room_id.equals(room_id) && connection_list.get(i).user_id != user_id) {
+                                     System.out.println("방에 있는 사람들에게 메세지 전송");
+                                     Socket temp_socket = connection_list.get(i).socket;
+                                     ObjectOutputStream temp_oos = new ObjectOutputStream(temp_socket.getOutputStream());
+                                     temp_oos.writeObject(content);
+                                     temp_oos.flush();
+                                 }
+                             }
+                         }
+                     } else if (content.getTypeofrequest() == 5) { //방목록 업데이트 요청인경우
+                         int update_user_id = content.getSender();
+                         ArrayList<String> room_list = db.get_room_list(update_user_id);
+                         protocol response = new protocol(6, room_list);
+                         ObjectOutputStream tmp_oos = new ObjectOutputStream(os);
+                         tmp_oos.writeObject(response);
+                         tmp_oos.flush();
+
+                     } else {
+                         System.out.println("잘못된 요청입니다.");
                      }
-                     content = null;
                  }
-//                 ois.close();
-//                 socket.close();
+                 ois.close();
+                 socket.close();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
