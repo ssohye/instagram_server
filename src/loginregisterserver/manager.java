@@ -8,7 +8,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ExecutionException;
 import database.*;
 
-public class manager implements Runnable{
+public class manager implements Runnable {
 
 
     private static class ConnectThread extends Thread
@@ -43,10 +43,8 @@ public class manager implements Runnable{
             }
         }
     }
-
     @Override
-    public void run(){
-
+    public void run() {
         ServerSocket serverSocket = null;
         try
         {   // 서버소켓을 생성, 9898 포트와 binding
@@ -134,7 +132,7 @@ public class manager implements Runnable{
                     id=br.readLine();
                     password=br.readLine();
                     if(db.logincheck(id,password)==true) {
-                        dos.writeInt(db.get_user_id(id));
+                        dos.writeInt(1);
                     }else{
                         dos.writeInt(-1);//비밀번호가 틀리면 -1을 클라이언트로 보내기
                     }

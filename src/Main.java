@@ -1,5 +1,5 @@
-import loginregisterserver.*;
 import chatting.*;
+import loginregisterserver.*;
 public class Main {
     public static void main(String[] args) {
         manager login = new manager();
@@ -7,6 +7,5 @@ public class Main {
         System.out.println("Hello world!");
         login.run();
         chat.run();
-
     }
 }
