@@ -146,7 +146,7 @@ public class chating_server implements Runnable {
                                          Socket tmp_socket = online_user_list.get(j).socket;
                                          OutputStream tmp_os = tmp_socket.getOutputStream();
                                          ObjectOutputStream tmp_oos = new ObjectOutputStream(tmp_os);
-                                         tmp_oos.writeObject(content); // update_req
+                                         tmp_oos.writeObject(update_req);
                                          tmp_oos.flush();
                                      }
                                  }
