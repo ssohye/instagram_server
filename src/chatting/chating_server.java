@@ -188,6 +188,7 @@ public class chating_server implements Runnable {
                              }
                          }
                      } else if (content.getTypeofrequest() == 5) { //방목록 업데이트 요청인경우
+                         System.out.println("방목록 업데이트 요청이 들어옴"+  content.getSender());
                          int update_user_id = content.getSender();
                          ArrayList<String> room_list = db.get_room_list(update_user_id);
                          protocol response = new protocol(6, room_list);
