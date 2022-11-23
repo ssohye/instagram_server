@@ -159,7 +159,7 @@ public class chating_server implements Runnable {
                             connection_list.add(tmp);
                             System.out.println("연결정보에 등록됨");
                             for(int i=0;i<connection_list.size();i++){
-                                if(connection_list.get(i).room_id.equals(room_id)){
+                                if(connection_list.get(i).room_id.equals(room_id)&&connection_list.get(i).user_id!=user_id){
                                     System.out.println("방에 있는 사람들에게 메세지 전송");
                                     Socket temp_socket = connection_list.get(i).socket;
                                     ObjectOutputStream temp_oos = new ObjectOutputStream(temp_socket.getOutputStream());
