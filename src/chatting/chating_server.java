@@ -144,6 +144,7 @@ public class chating_server implements Runnable {
                              for (int i = 0; i < new_user_list.size(); i++) {
                                  for (int j = 0; j < online_user_list.size(); j++) {
                                      if (new_user_list.get(i) == online_user_list.get(j).user_id) {
+                                         System.out.println("새로운 방이 생겼습니다. 유저: " + new_user_list.get(i) + "에게 알려줍니다.");
                                          Socket tmp_socket = online_user_list.get(j).socket;
                                          OutputStream tmp_os = tmp_socket.getOutputStream();
                                          ObjectOutputStream tmp_oos = new ObjectOutputStream(tmp_os);
