@@ -200,8 +200,7 @@ public class chating_server implements Runnable {
                     } else{
                         System.out.println("잘못된 요청입니다.");
                     }
-
-
+                    content=null;
                 }
 
 
