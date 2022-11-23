@@ -149,8 +149,10 @@ public class chating_server implements Runnable {
                             for(int i=0;i<connection_list.size();i++){
                                 if(connection_list.get(i).room_id.equals(room_id)){
                                     System.out.println("방에 있는 사람들에게 메세지 전송");
-                                    oos.writeObject(content);
-                                    oos.flush();
+                                    Socket temp_socket = connection_list.get(i).socket;
+                                    ObjectOutputStream temp_oos = new ObjectOutputStream(temp_socket.getOutputStream());
+                                    temp_oos.writeObject(content);
+                                    temp_oos.flush();
                                 }
                             }
                         }else{
@@ -159,8 +161,10 @@ public class chating_server implements Runnable {
                             for(int i=0;i<connection_list.size();i++){
                                 if(connection_list.get(i).room_id.equals(room_id)){
                                     System.out.println("방에 있는 사람들에게 메세지 전송");
-                                    oos.writeObject(content);
-                                    oos.flush();
+                                    Socket temp_socket = connection_list.get(i).socket;
+                                    ObjectOutputStream temp_oos = new ObjectOutputStream(temp_socket.getOutputStream());
+                                    temp_oos.writeObject(content);
+                                    temp_oos.flush();
                                 }
                             }
                         }
