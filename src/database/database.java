@@ -44,6 +44,9 @@ public class database {
         catch(Exception e){
             System.out.println(e);
         }
+        for(int i=0; i<room_list.size(); i++){
+            System.out.println(room_list.get(i));
+        }
         return room_list;
     }
 
