@@ -18,7 +18,7 @@ public class chating_server implements Runnable {
         int count = 1;
 
         //조태완이 참가한 채팅방의 고유번호(md5) 다 검색을 해 db에서
-       //채팅방의 수만큼 소켓을 저장하는 배열을 만들어야해
+        //채팅방의 수만큼 소켓을 저장하는 배열을 만들어야해
         //채팅방 고유번호 리스트
 
 
@@ -98,23 +98,39 @@ public class chating_server implements Runnable {
             protocol content = null;
 
             try {
-                 InputStream is = socket.getInputStream();
-                 ObjectInputStream ois= new ObjectInputStream(is);
-                 DataInputStream dis = new DataInputStream(is);
-                 OutputStream os = socket.getOutputStream();
-                 ObjectOutputStream oos = new ObjectOutputStream(os);
+                InputStream is = socket.getInputStream();
+                ObjectInputStream ois= new ObjectInputStream(is);
+                DataInputStream dis = new DataInputStream(is);
+                OutputStream os = socket.getOutputStream();
+                ObjectOutputStream oos = new ObjectOutputStream(os);
 
-                 int user_id= dis.readInt();
-                 String room_id=null;
+                int user_id= dis.readInt();
+                String room_id=null;
 
-                 //user_id 이용해서 속해 있는 room_id를 db에서 찾은후 커넥션 리스트에 등록하기
+                //user_id 이용해서 속해 있는 room_id를 db에서 찾은후 커넥션 리스트에 등록하기
+                ArrayList<String> room_id_list = db.get_users_room(user_id);
+                if(room_id_list.size()==0){
+                    System.out.println("해당 유저가 속한 채팅방이 없습니다.");
+                }
+                else{
+                    for(int i=0; i<room_id_list.size(); i++){
+                        room_id=room_id_list.get(i);
+                        connection tmp = new connection(room_id,user_id,socket);
+                        if(connection_list.contains(tmp)){
+
+                        }else{
+                            connection_list.add(tmp);
+                        }
+
+                    }
+                }
+
 
 
 
 
                 while((content = (protocol)ois.readObject()) != null ) {
                     if(content.getTypeofrequest()==1){ //새 방 만들기 요청
-                        user_id=content.getSender();
                         if(db.newroom(content)==true){
                             System.out.println("새 방 만들기 성공");
                         }else{
@@ -133,18 +149,22 @@ public class chating_server implements Runnable {
                             for(int i=0;i<connection_list.size();i++){
                                 if(connection_list.get(i).room_id.equals(room_id)){
                                     System.out.println("방에 있는 사람들에게 메세지 전송");
-                                    oos.writeObject(content);
-                                    oos.flush();
+                                    Socket temp_socket = connection_list.get(i).socket;
+                                    ObjectOutputStream temp_oos = new ObjectOutputStream(temp_socket.getOutputStream());
+                                    temp_oos.writeObject(content);
+                                    temp_oos.flush();
                                 }
                             }
                         }else{
-                            connection_list.add(tmp);
-                            System.out.println("연결정보에 등록됨");
+
+                            System.out.println("이미 연결정보에 등록됨");
                             for(int i=0;i<connection_list.size();i++){
-                                if(connection_list.get(i).room_id.equals(room_id)){
+                                if(connection_list.get(i).room_id.equals(room_id)&&connection_list.get(i).user_id!=user_id){
                                     System.out.println("방에 있는 사람들에게 메세지 전송");
-                                    oos.writeObject(content);
-                                    oos.flush();
+                                    Socket temp_socket = connection_list.get(i).socket;
+                                    ObjectOutputStream temp_oos = new ObjectOutputStream(temp_socket.getOutputStream());
+                                    temp_oos.writeObject(content);
+                                    temp_oos.flush();
                                 }
                             }
                         }
@@ -156,15 +176,15 @@ public class chating_server implements Runnable {
                 }
 
 
-                 ois.close();
-                 socket.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
+                ois.close();
+                socket.close();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+
         }
     }
+}
 
 
 
