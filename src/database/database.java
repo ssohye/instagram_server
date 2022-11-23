@@ -31,6 +31,7 @@ public class database {
     }
 
     public ArrayList<String> get_room_list(int user_id){
+        System.out.println("get_room_list running");
         ArrayList<String> room_list = new ArrayList<String>();
         try{
             String sql = "select chat_id from chat_manager where member = ?";
