@@ -108,13 +108,29 @@ public class chating_server implements Runnable {
                  String room_id=null;
 
                  //user_id 이용해서 속해 있는 room_id를 db에서 찾은후 커넥션 리스트에 등록하기
+                 ArrayList<String> room_id_list = db.get_users_room(user_id);
+                 if(room_id_list.size()==0){
+                     System.out.println("해당 유저가 속한 채팅방이 없습니다.");
+                 }
+                 else{
+                     for(int i=0; i<room_id_list.size(); i++){
+                         room_id=room_id_list.get(i);
+                         connection tmp = new connection(room_id,user_id,socket);
+                         if(connection_list.contains(tmp)){
+
+                         }else{
+                             connection_list.add(tmp);
+                         }
+
+                     }
+                 }
+
 
 
 
 
                 while((content = (protocol)ois.readObject()) != null ) {
                     if(content.getTypeofrequest()==1){ //새 방 만들기 요청
-                        user_id=content.getSender();
                         if(db.newroom(content)==true){
                             System.out.println("새 방 만들기 성공");
                         }else{
