@@ -134,7 +134,6 @@ public class chating_server implements Runnable {
                      }
                  }
 
-
                  while ((content = (protocol) ois.readObject()) != null) {
                      if (content.getTypeofrequest() == 1) { //새 방 만들기 요청
                          if (db.newroom(content) == true) { //db에 방만들기 요청
@@ -147,7 +146,7 @@ public class chating_server implements Runnable {
                                          Socket tmp_socket = online_user_list.get(j).socket;
                                          OutputStream tmp_os = tmp_socket.getOutputStream();
                                          ObjectOutputStream tmp_oos = new ObjectOutputStream(tmp_os);
-                                         tmp_oos.writeObject(update_req);
+                                         tmp_oos.writeObject(content); // update_req
                                          tmp_oos.flush();
                                      }
                                  }

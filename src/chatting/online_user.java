@@ -11,7 +11,5 @@ public class online_user {
     public online_user(int user_id, Socket socket) {
         this.socket = socket;
         this.user_id=user_id;
-        System.out.println("online_user 생성자" + user_id);
-        System.out.println("online_user 소켓" + socket);
     }
 }
