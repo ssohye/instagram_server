@@ -163,20 +163,14 @@ public class database {
         try {
             preparedstatement =con.prepareStatement(sq);
             preparedstatement.setInt(1,user_id);
-            int count = preparedstatement.executeUpdate();
-            if (count == 0) {
-                System.out.println("로그아웃 실패");
-                return false;
-            } else {
-                System.out.println("로그아웃 성공");
-                return true;
-            }
+            preparedstatement.executeQuery();
+            return true;
 
 
         }catch (Exception e){
             System.out.println(e);
+            return false;
         }
-        return false;
     }
 
     public String getroom_id(ArrayList<Integer> user_list){
