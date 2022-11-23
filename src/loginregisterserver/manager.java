@@ -117,7 +117,8 @@ public class manager {
                     System.out.println("password: "+password);
                     if(db.duplicateemailcheck(id)==true){
                         if(db.register(id,password)==true){
-                            dos.writeInt(1);
+                            int user_id=db.get_user_id(id);
+                            dos.writeInt(user_id);
                         }
                     }
                     else{
@@ -133,12 +134,12 @@ public class manager {
                     if(db.logincheck(id,password)==true) {
                         dos.writeInt(1);
                     }else{
-                        dos.writeInt(200);
+                        dos.writeInt(-1);//비밀번호가 틀리면 -1을 클라이언트로 보내기
                     }
 
                 } else if (statuscode==300) {//if logout
                     System.out.println("New Logout Requests");
-                    String user_id=br.readLine();
+                    int user_id=dis.readInt();
                     if(db.logout(user_id)==true){
                         System.out.println("logout complete");
                     }else{

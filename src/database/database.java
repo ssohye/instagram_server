@@ -1,8 +1,11 @@
 package database;
-
+import chatting.protocol;
 import com.mysql.cj.protocol.Resultset;
-
+import encryption.*;
 import java.sql.*;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -24,6 +27,22 @@ public class database {
         } catch (Exception e) {
             System.out.println(e);
         }
+    }
+
+    public int get_user_id(String id){
+        int user_id = 0;
+        try{
+            String sql = "select user_id from User where email = ?;";
+            preparedstatement = con.prepareStatement(sql);
+            preparedstatement.setString(1, id);
+            result = preparedstatement.executeQuery();
+            if(result.next()){
+                user_id = result.getInt("user_id");
+            }
+        }catch(Exception e){
+            System.out.println(e);
+        }
+        return user_id;
     }
 
     public Boolean logincheck(String idclient, String pwdclient) {
@@ -139,23 +158,20 @@ public class database {
         return false;
     }
 
-    public boolean logout(String user_id){
+    public boolean logout(int user_id){
         String sq ="update online_user set session_id=-1 where user_id=?;";
-        String find_user_id="select user_id from User where email=?;";
-        int id=0;
         try {
-
-            preparedstatement =con.prepareStatement(find_user_id);
-            preparedstatement.setString(1,user_id);
-            result=preparedstatement.executeQuery();
-            while (result.next()){
-                id=result.getInt(1);
+            preparedstatement =con.prepareStatement(sq);
+            preparedstatement.setInt(1,user_id);
+            int count = preparedstatement.executeUpdate();
+            if (count == 0) {
+                System.out.println("로그아웃 실패");
+                return false;
+            } else {
+                System.out.println("로그아웃 성공");
+                return true;
             }
 
-            preparedstatement =con.prepareStatement(sq);
-            preparedstatement.setInt(1,id);
-            preparedstatement.executeUpdate();
-            return true;
 
         }catch (Exception e){
             System.out.println(e);
@@ -163,46 +179,45 @@ public class database {
         return false;
     }
 
-    public int newroom(HashSet<String> member){
+    public String getroom_id(ArrayList<Integer> user_list){
+        int size=user_list.size();
+        String room_id=Integer.toString(size);
+        for(int i=0; i<size; i++){
+            room_id=room_id+Integer.toString(user_list.get(i));
+        }
+        room_id=room_id+getServerDateTime();
+        String room_id_md5=md5.encMD5(room_id);
+        return room_id_md5;
+    }
 
-        int chat_id=0;
-        String getlastchatnum="SELECT chat_id FROM chat_manager ORDER BY chat_id DESC LIMIT 1;";
+    public String getServerDateTime(){
+        String DateTime=null;
+        LocalTime now = LocalTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH_mm_ss");
+        DateTime = now.format(formatter);
+        return DateTime;
 
-        try {
-            result = statement.executeQuery(getlastchatnum);
-            while(result.next()) {
-                chat_id = Integer.parseInt(result.getString(1));
+    }
+
+    public boolean newroom(protocol tmp){
+        String sql ="insert into chat_manager (chat_id,member) values (?,?);";
+        ArrayList<Integer> user_list= tmp.getList();
+        String room_id=getroom_id(user_list);
+        try{
+            preparedstatement =con.prepareStatement(sql);
+            for(int i=0; i<user_list.size();i++){
+                preparedstatement.setString(1,room_id);
+                preparedstatement.setInt(2,user_list.get(i));
+                preparedstatement.executeUpdate();
             }
+
+            return true;
+
         }catch (Exception e){
             System.out.println(e);
         }
 
-        chat_id+=1;
-
-        Iterator iter = member.iterator();	// Iterator 사용
-        while(iter.hasNext()) {
-            String sq = "insert into chat_manager values(?,?)";
-
-            try {
-                preparedstatement = con.prepareStatement(sq);
-                preparedstatement.setString(1, Integer.toString(chat_id));
-                preparedstatement.setString(2, iter.next().toString());
-                int count = preparedstatement.executeUpdate();
-                if (count == 0) {
-                    System.out.println("데이터 입력 실패");
-
-                } else {
-                    System.out.println("데이터 입력 성공");
-
-                }
-            } catch (Exception e) {
-                System.out.println(e);
-            }
-        }
-
-
-
-        return chat_id;
+        return false;
     }
 
 
