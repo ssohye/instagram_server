@@ -11,6 +11,7 @@ import database.*;
 public class chating_server implements Runnable {
 
     public static ArrayList<connection> connection_list = new ArrayList<connection>();
+    public static ArrayList<online_user> online_user_list = new ArrayList<online_user>();
     public static database db=  new database();
     private static class ConnectThread extends Thread
     {
@@ -106,6 +107,13 @@ public class chating_server implements Runnable {
 
                  int user_id= dis.readInt();
                  String room_id=null;
+                 //클라이언트를 채팅 온라인 유저 목록 저장 리스트에 등록
+                 online_user user = new online_user(user_id,socket);
+                 if(online_user_list.contains(user)){
+                     System.out.println("이미 서버에 온라인 상태로 등록된 유저.");
+                 }else{
+                        online_user_list.add(user);
+                 }
 
                  //user_id 이용해서 속해 있는 room_id를 db에서 찾은후 커넥션 리스트에 등록하기
                  ArrayList<String> room_id_list = db.get_users_room(user_id);
@@ -131,7 +139,20 @@ public class chating_server implements Runnable {
 
                 while((content = (protocol)ois.readObject()) != null ) {
                     if(content.getTypeofrequest()==1){ //새 방 만들기 요청
-                        if(db.newroom(content)==true){
+                        if(db.newroom(content)==true){ //db에 방만들기 요청
+                            ArrayList<Integer> new_user_list = content.getList(); //새로 만들어진 방에 들어갈 유저들의 id
+                            protocol update_req=new protocol(5,-1); //새로 만들어진 방에 들어갈 유저들에게 새로운 방이 생겼다고 알려주는 요청
+                            for(int i=0; i<new_user_list.size(); i++){
+                                for(int j=0; j<online_user_list.size(); j++){
+                                    if(new_user_list.get(i)==online_user_list.get(j).user_id){
+                                        Socket tmp_socket = online_user_list.get(j).socket;
+                                        OutputStream tmp_os = tmp_socket.getOutputStream();
+                                        ObjectOutputStream tmp_oos = new ObjectOutputStream(tmp_os);
+                                        tmp_oos.writeObject(update_req);
+                                        tmp_oos.flush();
+                                    }
+                                }
+                            }
                             System.out.println("새 방 만들기 성공");
                         }else{
                             System.out.println("새 방 만들기 실패");
@@ -168,7 +189,14 @@ public class chating_server implements Runnable {
                                 }
                             }
                         }
-                    }else{
+                    } else if (content.getTypeofrequest()==5) { //방목록 업데이트 요청인경우
+                        int update_user_id = content.getSender();
+                        ArrayList<String> room_list=db.get_room_list(update_user_id);
+                        protocol response = new protocol(6,room_list);
+                        oos.writeObject(response);
+                        oos.flush();
+
+                    } else{
                         System.out.println("잘못된 요청입니다.");
                     }
 

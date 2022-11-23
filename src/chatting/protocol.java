@@ -56,7 +56,7 @@ public class protocol implements Serializable {
         this.sender=sender;
         this.typeofrequest= typeofrequest;
     }
-    //방 목록 응답
+
     public protocol(int typeofrequest,ArrayList<String> roomlist){
         this.typeofrequest = typeofrequest;
         this.roomlist = roomlist;
@@ -86,9 +86,5 @@ public class protocol implements Serializable {
     }
     public String getFile_path() {
         return file_path;
-    }
-
-    public ArrayList<String> getRoomlist() {
-        return roomlist;
     }
 }
