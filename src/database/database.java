@@ -1,6 +1,5 @@
 package database;
 import chatting.protocol;
-import com.mysql.cj.protocol.Resultset;
 import encryption.*;
 import java.sql.*;
 import java.time.LocalTime;
@@ -10,6 +9,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.io.File;
+import java.util.concurrent.ExecutionException;
 
 public class database {
     String url = "jdbc:mysql://swiftsjh.tplinkdns.com:3306/insta";
@@ -24,9 +24,28 @@ public class database {
     public database() {
         try {
             con = DriverManager.getConnection(url, userName, password);
+            //System.out.println("get con complete");
+            //System.out.println(con);
             statement = con.createStatement();
         } catch (Exception e) {
             System.out.println(e);
+        }
+    }
+
+    public boolean reset_db(){
+        try{
+            String sql = "delete from chat_manager;";
+            String sql2= "delete from chat_table";
+            String sql3="delete from online_user";
+            String sql4="delete from User";
+            statement.execute(sql);
+            statement.execute(sql2);
+            statement.execute(sql3);
+            statement.execute(sql4);
+            return true;
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
         }
     }
 
@@ -211,13 +230,12 @@ public class database {
 
     }
 
-    public boolean newroom(protocol tmp){
+    public String newroom(protocol tmp){
         String sql ="insert into chat_manager (chat_id,member) values (?,?);";
         String sql2="insert into chat_table (chat_room_id,chat_file) values (?,?);";
         ArrayList<Integer> user_list= tmp.getList();
         String room_id=getroom_id(user_list);
         System.out.println("new room_id : "+room_id);
-        String folder_path=makedir(room_id);
         try{
             preparedstatement =con.prepareStatement(sql);
             for(int i=0; i<user_list.size();i++){
@@ -225,23 +243,57 @@ public class database {
                 preparedstatement.setInt(2,user_list.get(i));
                 preparedstatement.executeUpdate();
             }
+
+            String folder_path=makedir(room_id);
             preparedstatement = con.prepareStatement(sql2);
             preparedstatement.setString(1,room_id);
             preparedstatement.setString(2,folder_path);
+            preparedstatement.executeUpdate();
 
-            return true;
+            return room_id;
 
         }catch (Exception e){
             System.out.println(e);
         }
 
-        return false;
+        return null;
+    }
+
+    public boolean exitroom(String room_id,int user_id){
+        String sql="delete from chat_manager where member=?;";
+        try {
+            preparedstatement = con.prepareStatement(sql);
+            preparedstatement.setInt(1,user_id);
+            preparedstatement.executeUpdate();
+            return true;
+        }catch (Exception e){
+            System.out.println(e);
+            return false;
+        }
+    }
+
+    public boolean invite_user_to_room(int user_id,String room_id,ArrayList<Integer> list){
+        String sql="insert into chat_manager(chat_id,member) values(?,?);";
+        try{
+            for(int i=0; i<list.size(); i++){
+                preparedstatement = con.prepareStatement(sql);
+                preparedstatement.setString(1,room_id);
+                preparedstatement.setInt(2,list.get(i));
+                preparedstatement.executeUpdate();
+
+            }
+            return true;
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+
     }
 
 
     public String makedir(String room_id){
 
-        String path = "../../chatting_data/"+room_id;
+        String path = "chatting_data/"+room_id;
         File Folder = new File(path);
 
         // 해당 디렉토리가 없을경우 디렉토리를 생성합니다.

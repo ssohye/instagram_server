@@ -5,7 +5,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-public class file_server {
+public class file_server implements Runnable {
 
 
     private static class ConnectThread extends Thread
@@ -39,12 +39,12 @@ public class file_server {
             }
         }
     }
-
-    public static void main(String[] args){
+    @Override
+    public void run(){
         ServerSocket serverSocket = null;
         try
         {   // 서버소켓을 생성, 8080 포트와 binding
-            serverSocket = new ServerSocket(8080); // 생성자 내부에 bind()가 있고, bind() 내부에 listen() 있음
+            serverSocket = new ServerSocket(25589); // 생성자 내부에 bind()가 있고, bind() 내부에 listen() 있음
             ConnectThread connectThread = new ConnectThread(serverSocket); // 서버소켓을 connectThread에 넘겨줌
             connectThread.start(); // connectThread 시작
 
@@ -63,12 +63,13 @@ public class file_server {
         Socket socket;
         int id;
 
-        String filesavepath="C:\\Users\\Administrator\\IdeaProjects\\instagram_server\\src\\filetranfer\\";
+        String filesavepath="/home/ubuntu/instagram_server/chatting_data/";
 
         FileOutputStream fileOutput = null;
         DataInputStream dataInput = null;
+        BufferedReader br=null;
 
-        InputStream os =null;
+        InputStream is =null;
         byte[] buf = null;
         BufferedInputStream bufferdInput = null; //input 속도 향상을 위한 BufferedInputStream
 
@@ -94,22 +95,24 @@ public class file_server {
         public void run ()
         {
             try {
-                os=socket.getInputStream();
-                dataInput = new DataInputStream(os); //송신측에서 연결요청시 accept
-
-                // 메소드에서 송신측과
-                // 연결을 위한 연결소켓생성
-                int totalSize = dataInput.readInt();       //전송받을 파일 사이즈 수신및 변수에 저장
+                is=socket.getInputStream();
+                dataInput = new DataInputStream(is);
+                br = new BufferedReader(new InputStreamReader(is));
+                String room_number=br.readLine(); //방 고유 번호 읽기
+                System.out.println("방 번호:"+room_number);
+                String new_file_name=br.readLine();
+                System.out.println("새 파일 이름:"+new_file_name);
+                String filetype=br.readLine();
+                System.out.println("파일타입:"+filetype);
+                String file_size=br.readLine();
+                System.out.println("파일크기:"+file_size);
+                int totalSize = Integer.parseInt(file_size);
                 System.out.println(totalSize);  //수신 파일 사이즈 콘솔출력
-                String filetype=null; //파일 확장자 변수
-                byte[] filetype_inbyte= new byte[20];
-                os.read(filetype_inbyte); //파일 타입 송신자로부터 수신
-                filetype=new String(filetype_inbyte);
-                filetype=filetype.trim();
-                System.out.println("file type:"+filetype);
-                String fileName = getServerDateTime()+filetype;
+
+                //System.out.println("file type:"+filetype);
+                new_file_name = new_file_name+filetype;
                 buf = new byte[104857600];      //100MB 단위로 파일을 쓰기 위한 byte타입 배열
-                fileOutput = new FileOutputStream(filesavepath+fileName, false);
+                fileOutput = new FileOutputStream(filesavepath+room_number+"/"+new_file_name, false);
                 bufferdInput = new BufferedInputStream(dataInput);
                 int i = 0;  //buf 배열 인덱스용 변수
 
