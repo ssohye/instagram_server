@@ -3,6 +3,7 @@ package chatting;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -134,7 +135,7 @@ public class chating_server implements Runnable {
                 //user_id 이용해서 속해 있는 room_id를 db에서 찾은후 커넥션 리스트에 등록하기
                 ArrayList<String> room_id_list = db.get_users_room(db.get_user_id(user_id));
                 if (room_id_list.size() == 0) {
-                    System.out.println("해당 유저가 속한 채팅방이 없습니다.");
+                    System.out.println(user_id+" 유저가 속한 채팅방이 없습니다.");
                 } else {
                     for (int i = 0; i < room_id_list.size(); i++) {
                         room_id = room_id_list.get(i);
@@ -153,9 +154,8 @@ public class chating_server implements Runnable {
                 while ((content = (protocol) ois.readObject()) != null) {
                     System.out.println("커넥션 리스트를 출력합니다.");
                     for(int i=0; i<connection_list.size(); i++){
-                        System.out.println(connection_list.get(i).room_id);
-                        System.out.println(connection_list.get(i).user_id);
-                        System.out.println(connection_list.get(i).socket);
+                        System.out.println("유저: "+db.get_user_id_as_String(connection_list.get(i).user_id)+" 방: "+connection_list.get(i).room_id);
+
                     }
                     if (content.getTypeofrequest() == 1) { //새 방 만들기 요청
                         String new_room_id=db.newroom(content);
@@ -299,7 +299,7 @@ public class chating_server implements Runnable {
                         System.out.println(content.getSender()+"에게 방 목록 전송");
 
                     }else if(content.getTypeofrequest()==13){
-                        System.out.println(content.getSender()+"로 부터 방안의 유저 목록 요칭이 들어옴");
+                        System.out.println(content.getSender()+"로 부터 "+content.getRoomnumber()+"방안의 유저 목록 요청이 들어옴");
                         String room_id_tmp=content.getRoomnumber();
                         ArrayList<String> response = db.get_user_list_in_room(room_id_tmp);
                         for(int i=0; i<response.size(); i++){
@@ -328,6 +328,7 @@ public class chating_server implements Runnable {
                 ois.close();
                 socket.close();
             } catch (EOFException e) {
+                System.out.println("[EOFException]");
                 System.out.println(user_id + "로 부터 비정상적인 종료에 의한 로그아웃 요청이 들어옴");
                 for (int i = 0; i < connection_list.size(); i++) {
                     if (connection_list.get(i).user_id == db.get_user_id(user_id)) {
@@ -342,7 +343,24 @@ public class chating_server implements Runnable {
                     }
                 }
 
-            } catch (Exception e) {
+            }catch (SocketException e){
+                System.out.println("[SocketException]");
+                System.out.println(user_id + "로 부터 비정상적인 종료에 의한 로그아웃 요청이 들어옴");
+                for (int i = 0; i < connection_list.size(); i++) {
+                    if (connection_list.get(i).user_id == db.get_user_id(user_id)) {
+                        connection_list.remove(i);
+
+                    }
+                }
+
+                for(int i=0; i<online_user_list.size(); i++){
+                    if(online_user_list.get(i).user_id==db.get_user_id(user_id)){
+                        online_user_list.remove(i);
+                    }
+                }
+
+
+            }catch (Exception e) {
                 e.printStackTrace();
                 System.out.println(user_id + "로 부터 비정상적인 종료에 의한 로그아웃 요청이 들어옴");
                 for (int i = 0; i < connection_list.size(); i++) {

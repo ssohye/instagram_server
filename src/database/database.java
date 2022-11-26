@@ -1,5 +1,6 @@
 package database;
 import chatting.protocol;
+import com.mysql.cj.protocol.Resultset;
 import encryption.*;
 
 import java.io.InputStreamReader;
@@ -382,19 +383,23 @@ public class database {
 
     public ArrayList<String> get_user_list_in_room(String room_id){
         String check_sql="select member from chat_manager where chat_id=?;";
-        ArrayList<String> tmp=new ArrayList<>();
+        ArrayList<String> tmp = new ArrayList<String>();
         try {
-            preparedstatement = con.prepareStatement(check_sql);
-            preparedstatement.setString(1,room_id);
-            result=preparedstatement.executeQuery();
-            while (result.next()){
-                tmp.add(get_user_id_as_String(result.getInt("member")));
+            ResultSet result_tmp;
+            PreparedStatement A = con.prepareStatement((check_sql));
+            A.setString(1,room_id);
+            result_tmp=A.executeQuery();
+            while (result_tmp.next()){
+                tmp.add(get_user_id_as_String(result_tmp.getInt(1)));
             }
+
             return tmp;
         }catch (Exception e){
             System.out.println(e);
             return null;
         }
+
+
     }
 
 
