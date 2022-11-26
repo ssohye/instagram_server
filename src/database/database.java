@@ -68,6 +68,39 @@ public class database {
         return user_id;
     }
 
+    public ArrayList<String> get_all_user_id(){
+        ArrayList<String> user_id = new ArrayList<>();
+        try{
+            String sql = "select email from User;";
+            preparedstatement = con.prepareStatement(sql);
+            result = preparedstatement.executeQuery();
+
+            while(result.next()){
+                user_id.add(result.getString("email"));
+            }
+        }catch(Exception e){
+            System.out.println(e);
+        }
+        return user_id;
+    }
+
+    public String get_user_id_as_String(int id){
+        String user_id = null;
+        try{
+            String sql = "select email from User where user_id = ?;";
+            preparedstatement = con.prepareStatement(sql);
+            preparedstatement.setInt(1, id);
+            result = preparedstatement.executeQuery();
+
+            if(result.next()){
+                user_id = result.getString("email");
+            }
+        }catch(Exception e){
+            System.out.println(e);
+        }
+        return user_id;
+    }
+
     public Boolean logincheck(String idclient, String pwdclient) {
         String sq = "select user_id,email,password from User";
         String makeuseronline ="INSERT INTO online_user (session_id,user_id) VALUE(1,?);";
@@ -345,6 +378,23 @@ public class database {
             return null;
         }
         return null;
+    }
+
+    public ArrayList<String> get_user_list_in_room(String room_id){
+        String check_sql="select member from chat_manager where chat_id=?;";
+        ArrayList<String> tmp=new ArrayList<>();
+        try {
+            preparedstatement = con.prepareStatement(check_sql);
+            preparedstatement.setString(1,room_id);
+            result=preparedstatement.executeQuery();
+            while (result.next()){
+                tmp.add(get_user_id_as_String(result.getInt("member")));
+            }
+            return tmp;
+        }catch (Exception e){
+            System.out.println(e);
+            return null;
+        }
     }
 
 

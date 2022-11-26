@@ -230,6 +230,8 @@ public class chating_server implements Runnable {
                         }
 
                     } else if (content.getTypeofrequest() == 4) { //메시지 보내기
+                        System.out.println(content.getSender()+"로 부터 메세지 보내기 요청이 들어옴");
+                        System.out.println("내용:"+content.getMessege());
                         room_id = content.getRoomnumber();
                         if(caching(content)==true){
 
@@ -282,7 +284,40 @@ public class chating_server implements Runnable {
                         }
                         System.out.println(user_id + "가 로그아웃 하였습니다.");
                         break;
-                    } else {
+                    }else if(content.getTypeofrequest()==11){
+                        System.out.println(content.getSender()+"로 부터 방 목록 요청이 들어옴");
+                        String sender = content.getSender();
+                        ArrayList<String> response = db.get_users_room(db.get_user_id(sender));
+                        for(int i=0; i<response.size(); i++){
+                            System.out.println("방 목록 : "+response.get(i));
+                        }
+
+                        protocol tmp_content = new protocol(12,"server",response);
+                        ObjectOutputStream temp_oos = new ObjectOutputStream(socket.getOutputStream());
+                        temp_oos.writeObject(tmp_content);
+                        temp_oos.flush();
+                        System.out.println(content.getSender()+"에게 방 목록 전송");
+
+                    }else if(content.getTypeofrequest()==13){
+                        System.out.println(content.getSender()+"로 부터 방안의 유저 목록 요칭이 들어옴");
+                        String room_id_tmp=content.getRoomnumber();
+                        ArrayList<String> response = db.get_user_list_in_room(room_id_tmp);
+                        for(int i=0; i<response.size(); i++){
+                            System.out.println("방 안 유저  : "+response.get(i));
+                        }
+                        protocol tmp_content= new protocol(14,"server",response);
+                        ObjectOutputStream temp_oos = new ObjectOutputStream(socket.getOutputStream());
+                        temp_oos.writeObject(tmp_content);
+                        temp_oos.flush();
+                    }else if(content.getTypeofrequest()==15) {
+                        System.out.println(content.getSender() + "로 부터 전체 유저 목록 요청이 들어옴");
+                        ArrayList<String> response = db.get_all_user_id();
+                        protocol tmp_content = new protocol(16, "server", response);
+                        ObjectOutputStream temp_oos = new ObjectOutputStream(socket.getOutputStream());
+                        temp_oos.writeObject(tmp_content);
+                        temp_oos.flush();
+                    }
+                    else {
                         System.out.println("잘못된 요청입니다.");
                     }
 
@@ -309,6 +344,19 @@ public class chating_server implements Runnable {
 
             } catch (Exception e) {
                 e.printStackTrace();
+                System.out.println(user_id + "로 부터 비정상적인 종료에 의한 로그아웃 요청이 들어옴");
+                for (int i = 0; i < connection_list.size(); i++) {
+                    if (connection_list.get(i).user_id == db.get_user_id(user_id)) {
+                        connection_list.remove(i);
+
+                    }
+                }
+
+                for(int i=0; i<online_user_list.size(); i++){
+                    if(online_user_list.get(i).user_id==db.get_user_id(user_id)){
+                        online_user_list.remove(i);
+                    }
+                }
             }
         }
     }
