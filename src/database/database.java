@@ -1,6 +1,9 @@
 package database;
 import chatting.protocol;
+import com.mysql.cj.protocol.Resultset;
 import encryption.*;
+
+import java.io.InputStreamReader;
 import java.sql.*;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -12,7 +15,7 @@ import java.io.File;
 import java.util.concurrent.ExecutionException;
 
 public class database {
-    String url = "jdbc:mysql://swiftsjh.tplinkdns.com:3306/insta";
+    String url = "jdbc:mysql://swiftsjh.tplinkdns.com:3306/insta?autoReconnect=true";
     String userName = "dmz";
     String password = "1234";
     Connection con = null;
@@ -50,14 +53,48 @@ public class database {
     }
 
     public int get_user_id(String id){
-        int user_id = 0;
+        int user_id = -1;
         try{
             String sql = "select user_id from User where email = ?;";
             preparedstatement = con.prepareStatement(sql);
             preparedstatement.setString(1, id);
             result = preparedstatement.executeQuery();
+
             if(result.next()){
                 user_id = result.getInt("user_id");
+            }
+        }catch(Exception e){
+            System.out.println(e);
+        }
+        return user_id;
+    }
+
+    public ArrayList<String> get_all_user_id(){
+        ArrayList<String> user_id = new ArrayList<>();
+        try{
+            String sql = "select email from User;";
+            preparedstatement = con.prepareStatement(sql);
+            result = preparedstatement.executeQuery();
+
+            while(result.next()){
+                user_id.add(result.getString("email"));
+            }
+        }catch(Exception e){
+            System.out.println(e);
+        }
+        return user_id;
+    }
+
+    public String get_user_id_as_String(int id){
+        String user_id = null;
+        try{
+            String sql = "select email from User where user_id = ?;";
+            preparedstatement = con.prepareStatement(sql);
+            preparedstatement.setInt(1, id);
+            result = preparedstatement.executeQuery();
+
+            if(result.next()){
+                user_id = result.getString("email");
             }
         }catch(Exception e){
             System.out.println(e);
@@ -233,7 +270,15 @@ public class database {
     public String newroom(protocol tmp){
         String sql ="insert into chat_manager (chat_id,member) values (?,?);";
         String sql2="insert into chat_table (chat_room_id,chat_file) values (?,?);";
-        ArrayList<Integer> user_list= tmp.getList();
+        ArrayList<Integer> user_list= new ArrayList<>();
+        for(int i=0; i<tmp.getList().size(); i++){
+            user_list.add(get_user_id(tmp.getList().get(i)));
+            System.out.println("초대 할 유저 아이디 : "+user_list.get(i));
+        }
+        if(user_list.contains(-1)){
+            Integer t = Integer.getInteger("-1");
+            user_list.remove(t);
+        }
         String room_id=getroom_id(user_list);
         System.out.println("new room_id : "+room_id);
         try{
@@ -260,10 +305,11 @@ public class database {
     }
 
     public boolean exitroom(String room_id,int user_id){
-        String sql="delete from chat_manager where member=?;";
+        String sql="delete from chat_manager where member=? and chat_id=?;";
         try {
             preparedstatement = con.prepareStatement(sql);
             preparedstatement.setInt(1,user_id);
+            preparedstatement.setString(2,room_id);
             preparedstatement.executeUpdate();
             return true;
         }catch (Exception e){
@@ -272,21 +318,44 @@ public class database {
         }
     }
 
-    public boolean invite_user_to_room(int user_id,String room_id,ArrayList<Integer> list){
-        String sql="insert into chat_manager(chat_id,member) values(?,?);";
-        try{
+    public boolean invite_user_to_room(int user_id,String room_id,ArrayList<String> list){
+
+        if(list.size()==0){
+            return false;
+        }
+
+
+        try {
+            String sq ="insert into chat_manager (chat_id,member) values (?,?);";
+            String check_sql="select chat_id from chat_manager where chat_id=? and member=?;";
+            PreparedStatement tmp = con.prepareStatement(check_sql);
+            PreparedStatement tmp2=con.prepareStatement(sq);
             for(int i=0; i<list.size(); i++){
-                preparedstatement = con.prepareStatement(sql);
-                preparedstatement.setString(1,room_id);
-                preparedstatement.setInt(2,list.get(i));
-                preparedstatement.executeUpdate();
+                tmp.setString(1,room_id);
+                tmp.setInt(2,get_user_id(list.get(i)));
+                result=tmp.executeQuery();
+                int count=0;
+                while (result.next()){
+                    count=result.getRow();
+                }
+                if(count==0){
+                    tmp2 = con.prepareStatement(sq);
+                    tmp2.setString(1,room_id);
+                    tmp2.setInt(2,get_user_id(list.get(i)));
+                    tmp2.executeUpdate();
+                    System.out.println(user_id + "(고유번호)에 의해 " + list.get(i) + "가 방" + room_id + "에 초대되었습니다.");
+                }else {
+                    System.out.println(list.get(i)+"는 이미 "+room_id+"방에 있습니다.");
+                }
 
             }
+
             return true;
         }catch (Exception e){
             e.printStackTrace();
             return false;
         }
+
 
     }
 
@@ -311,6 +380,27 @@ public class database {
             return null;
         }
         return null;
+    }
+
+    public ArrayList<String> get_user_list_in_room(String room_id){
+        String check_sql="select member from chat_manager where chat_id=?;";
+        ArrayList<String> tmp = new ArrayList<String>();
+        try {
+            ResultSet result_tmp;
+            PreparedStatement A = con.prepareStatement((check_sql));
+            A.setString(1,room_id);
+            result_tmp=A.executeQuery();
+            while (result_tmp.next()){
+                tmp.add(get_user_id_as_String(result_tmp.getInt(1)));
+            }
+
+            return tmp;
+        }catch (Exception e){
+            System.out.println(e);
+            return null;
+        }
+
+
     }
 
 
