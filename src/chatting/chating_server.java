@@ -284,7 +284,20 @@ public class chating_server implements Runnable {
                         }
                         System.out.println(user_id + "가 로그아웃 하였습니다.");
                         break;
-                    }else if(content.getTypeofrequest()==11){
+                    }else  if(content.getTypeofrequest()==7) {
+                        System.out.println(content.getSender() + "로 부터 팔로우 신청 요청이 들어옴");
+                        String sender = content.getSender();
+                        if (db.follow_request(content.getSender(), content.getFollow()) == true) {
+                            System.out.println(sender + "가 " + content.getFollow() + "에게 팔로우 신청을 보냈습니다.");
+                        }
+                    }else if(content.getTypeofrequest()==8){
+                        System.out.println(content.getSender()+"로 부터 팔로우 취소 요청이 들어옴");
+                        String sender = content.getSender();
+                        if(db.follow_cancel(content.getSender(), content.getFollow())==true){
+                            System.out.println(sender+"가 "+content.getFollow()+"에게 팔로우 취소를 보냈습니다.");
+                        }
+                    }
+                    else if(content.getTypeofrequest()==11){
                         System.out.println(content.getSender()+"로 부터 방 목록 요청이 들어옴");
                         String sender = content.getSender();
                         ArrayList<String> response = db.get_users_room(db.get_user_id(sender));

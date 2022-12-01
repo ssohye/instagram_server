@@ -17,6 +17,9 @@ public class protocol implements Serializable {
     private String file_name;
     private String error_type;
 
+    private String following;
+    private String follow;
+
 
     public protocol(){}
 
@@ -26,12 +29,14 @@ public class protocol implements Serializable {
     // 방에서 나가기인 경우 (방 나가기 요청) type = 3
     // 메시지 보내기인 경우 (메시지 보내기 요청) type = 4
     // 로그아웃인 경우 (로그아웃 요청) type = 5
+
     // 체팅방 유저 목록 불러오기 (유저 정보가 담긴 list 요청) = 6
-    // 팔로워 정보 불러오기 (팔로워 정보가 담긴 list 요청) = 7
+    // 팔로우 하기 (팔로우 요청) = 7
+
     // 팔로잉 정보 불러오기 (팔로잉 정보가 담긴 list 요청) = 8
     // 유저가 속한 방 목록 불러오기 (방 정보가 담긴 list 요청) = 11
-    // 전송 프로토콜
-    // 에러 메시지 전송 (에러 메시지 전송)
+    // 유저가 속한 방 목록 불러오기 (방 정보가 담긴 list 요청) = 12
+    // 파일 전송 요청 = 13
 
     // 방 생성인 경우 1 or 유저가 속한 방 목록 불러오기
     public protocol(int typeofrequest, String sender, ArrayList<String> list){
@@ -48,11 +53,12 @@ public class protocol implements Serializable {
         this.list = list;
     }
 
-    // 방에서 나가기 3
-    public protocol(int typeofrequest, String sender, String roomnumber){
-        this.typeofrequest = typeofrequest;
-        this.sender = sender;
-        this.roomnumber = roomnumber;
+    // 방에서 나가기 3, 팔로우 요청 7
+    public protocol(int a, String b, String c){
+        this.typeofrequest = a;
+        this.sender = b;
+        this.roomnumber = c;
+        this.follow = c;
     }
 
     // 메시지 보내기 4
@@ -67,23 +73,11 @@ public class protocol implements Serializable {
     }
 
     // 로그아웃 5, 팔로워, 팔로잉 목록 불러오기 요청 9, 10
-    public protocol(int typeofrequest, String sender){
+    public protocol(int typeofrequest, String sender) {
         this.typeofrequest = typeofrequest;
         this.sender = sender;
     }
 
-//    // 체팅방 유저 목록 불러오기 6
-//    public protocol(int typeofrequest, String roomnumber){
-//        this.typeofrequest = typeofrequest;
-//        this.roomnumber = roomnumber;
-//    }
-
-    // 파일을 보내는 경우 7, 파일을 요청하는 경우 8
-//    public protocol(int typeofrequest, String roomnumber, String file_path){
-//        this.typeofrequest = typeofrequest;
-//        this.roomnumber = roomnumber;
-//        this.file_name = file_path;
-//    }
 
     public protocol(String error_type) {
         this.error_type = error_type;
@@ -115,6 +109,13 @@ public class protocol implements Serializable {
         return file_name;
     }
 
+    public String getFollow() {
+        return follow;
+    }
+    public String getFollowing() {
+        return following;
+    }
+
     //make setter function
     public void setTypeofrequest(int typeofrequest) {
         this.typeofrequest = typeofrequest;
@@ -133,7 +134,7 @@ public class protocol implements Serializable {
     }
     public void setTime() {
         LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyMMddHHmmss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
         this.time = now.format(formatter);
     }
     public void setFile_exist(boolean file_exist) {
@@ -142,7 +143,7 @@ public class protocol implements Serializable {
     public void setFile_name(String file_name) {
         this.file_name = file_name;
     }
-
-
-
 }
+
+
+

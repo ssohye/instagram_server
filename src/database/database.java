@@ -55,11 +55,10 @@ public class database {
     public int get_user_id(String id){
         int user_id = -1;
         try{
-            String sql = "select user_id from User where email = ?;";
+            String sql = "select user_id from User where email = ?";
             preparedstatement = con.prepareStatement(sql);
             preparedstatement.setString(1, id);
             result = preparedstatement.executeQuery();
-
             if(result.next()){
                 user_id = result.getInt("user_id");
             }
@@ -67,6 +66,40 @@ public class database {
             System.out.println(e);
         }
         return user_id;
+    }
+
+    public boolean follow_request(String sender,String follow){
+        try{
+            String sql1="INSERT INTO follow (follower_id,following_id) VALUES (?,?)";
+            int a = get_user_id(sender);
+            int b = get_user_id(follow);
+            preparedstatement = con.prepareStatement(sql1);
+            preparedstatement.setInt(1, a);
+            preparedstatement.setInt(2, b);
+            preparedstatement.executeUpdate();
+            return true;
+
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean follow_cancel(String sender,String follow){
+        try{
+            String sql="delete from follow where follower_id=? and following_id=?;";
+            int a = get_user_id(sender);
+            int b = get_user_id(follow);
+            preparedstatement = con.prepareStatement(sql);
+            preparedstatement.setInt(1, a);
+            preparedstatement.setInt(2, b);
+            preparedstatement.executeUpdate();
+            return true;
+
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public ArrayList<String> get_all_user_id(){
@@ -173,9 +206,13 @@ public class database {
         String sq ="INSERT INTO User (email, password) VALUE(?,?);";
         try {
             preparedstatement =con.prepareStatement(sq);
+            System.out.println(preparedstatement);
             preparedstatement.setString(1,idclient);
+            System.out.println(preparedstatement);
             preparedstatement.setString(2,pwdclient);
+            System.out.println(preparedstatement);
             int count = preparedstatement.executeUpdate();
+            System.out.println(preparedstatement);
             if (count == 0) {
                 System.out.println("데이터 입력 실패");
                 return false;
