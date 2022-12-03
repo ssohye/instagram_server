@@ -193,13 +193,17 @@ public class database {
 
     public boolean tag_exist(String tag){
         try{
-            String sql ="select hashtag_id from hashtag where hashtag=?";
+            String sql ="select count(hashtag_id) from hashtag where hashtag=?";
 
             preparedstatement =con.prepareStatement(sql);
             preparedstatement.setString(1,tag);
             result=preparedstatement.executeQuery();
             result.next();
-            return true;
+            if(result.getInt(1)>0){
+                return true;
+            }else{
+                return false;
+            }
         }catch (Exception e){
             e.printStackTrace();
         }

@@ -9,11 +9,13 @@ public class Main {
         chating_server chat = new chating_server();
         file_server file =new file_server();
         request_server rs=new request_server();
+        img_server is=new img_server();
         System.out.println("Hello world!");
         login.run();
         chat.run();
         file.run();
         rs.run();
+        is.run();
 
 
     }

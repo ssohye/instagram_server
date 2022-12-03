@@ -154,7 +154,7 @@ public class request_server implements Runnable {
                     String post_id=content.getSender();
                     String post_content=db.get_post_content(post_id);
                     String post_photo_name=db.get_post_photo_name(post_id);
-                    ArrayList<String> tag=null;
+                    ArrayList<String> tag=new ArrayList<>();
                     ArrayList<Integer> hashtag_id=db.get_post_hashtag_id(post_id);
                     for(int i=0; i<hashtag_id.size(); i++){
                         tag.add(db.get_tag(hashtag_id.get(i)));
