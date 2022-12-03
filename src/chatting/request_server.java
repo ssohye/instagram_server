@@ -137,7 +137,13 @@ public class request_server implements Runnable {
                     temp_oos.flush();
                 } else if (content.getTypeofrequest() == 17) {
                     System.out.println(content.getSender() + "로 부터 게시물 업로드 요청 들어옴");
-                } else if (content.getTypeofrequest() == 19) {
+                    String sender=content.getSender();
+                    String post_content=content.getMessage();
+                    ArrayList<String> tag= content.getList();
+                    String post_photo_name= content.getFile_name();
+                    db.new_post(sender,post_content,post_photo_name,tag);
+                }
+                else if (content.getTypeofrequest() == 19) {
                     System.out.println(content.getSender() + "로 부터 본인이 팔로우하고 있는 사람 수 요청이 들어옴");
                     String sender = content.getSender();
                     int following_num = db.get_follow_num(sender);

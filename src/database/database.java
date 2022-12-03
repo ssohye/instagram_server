@@ -89,6 +89,12 @@ public class database {
             for(int i=0;i<tag.size(); i++){
                 if(tag_exist(tag.get(i))==false){
                     add_tag(tag.get(i));
+                    preparedstatement =con.prepareStatement(sql3);
+                    preparedstatement.setString(1,tag.get(i));
+                    result=preparedstatement.executeQuery();
+                    result.next();
+                    int hashtag_id=result.getInt(1);
+                    new_post_hashtag(post_id,hashtag_id);
                 }else {
                     preparedstatement =con.prepareStatement(sql3);
                     preparedstatement.setString(1,tag.get(i));
