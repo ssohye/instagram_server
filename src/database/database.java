@@ -4,6 +4,7 @@ import com.mysql.cj.protocol.Resultset;
 import com.mysql.cj.util.DnsSrv;
 import encryption.*;
 
+import java.awt.image.AreaAveragingScaleFilter;
 import java.io.InputStreamReader;
 import java.sql.*;
 import java.time.LocalTime;
@@ -68,6 +69,68 @@ public class database {
         }
         return user_id;
     }
+
+    public ArrayList<String> get_all_post_id() {
+        ArrayList<String> all_post_id = new ArrayList<>();
+        try {
+            String sql = "select post_id from post";
+            preparedstatement = con.prepareStatement(sql);
+            result = preparedstatement.executeQuery();
+            while (result.next()) {
+                all_post_id.add(result.getString("post_id"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return all_post_id;
+    }
+
+    public String get_post_content(String post_id){
+        try{
+            String sql="select content from post where post_id=?";
+            preparedstatement = con.prepareStatement(sql);
+            preparedstatement.setString(1,post_id);
+            result = preparedstatement.executeQuery();
+            if(result.next()){
+                return result.getString("content");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public String get_post_photo_name(String post_id){
+        try{
+            String sql="select file_name from image where post_id=?";
+            preparedstatement = con.prepareStatement(sql);
+            preparedstatement.setInt(1,Integer.parseInt(post_id));
+            result = preparedstatement.executeQuery();
+            if(result.next()){
+                return result.getString("file_name");
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public ArrayList<Integer> get_post_hashtag_id(String post_id){
+        ArrayList<Integer> hashtag_id = new ArrayList<>();
+        try{
+            String sql="select hashtag_id2 from post_hashtag where post_id=?";
+            preparedstatement = con.prepareStatement(sql);
+            preparedstatement.setInt(1,Integer.parseInt(post_id));
+            result = preparedstatement.executeQuery();
+            while(result.next()){
+                hashtag_id.add(result.getInt("hashtag_id2"));
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return hashtag_id;
+    }
+
 
     public boolean new_post(String sender,String msg,String path,ArrayList<String> tag){
         try{

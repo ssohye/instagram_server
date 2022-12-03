@@ -142,6 +142,27 @@ public class request_server implements Runnable {
                     ArrayList<String> tag= content.getList();
                     String post_photo_name= content.getFile_name();
                     db.new_post(sender,post_content,post_photo_name,tag);
+                }else if(content.getTypeofrequest()==16){
+                    System.out.println(content.getSender()+"로 부터 전체 게시물 아이디 요청 받음");
+                    ArrayList<String> response=db.get_all_post_id();
+                    protocol tmp_content = new protocol(16, "server", response);
+                    ObjectOutputStream temp_oos = new ObjectOutputStream(socket.getOutputStream());
+                    temp_oos.writeObject(tmp_content);
+
+                }else if(content.getTypeofrequest()==18){
+                    System.out.println(content.getSender()+"로 부터 게시물 요청 받음");
+                    String post_id=content.getSender();
+                    String post_content=db.get_post_content(post_id);
+                    String post_photo_name=db.get_post_photo_name(post_id);
+                    ArrayList<String> tag=null;
+                    ArrayList<Integer> hashtag_id=db.get_post_hashtag_id(post_id);
+
+                    protocol tmp_content = new protocol(18, "server", post_content,tag,post_photo_name);
+                    ObjectOutputStream temp_oos = new ObjectOutputStream(socket.getOutputStream());
+                    temp_oos.writeObject(tmp_content);
+                    temp_oos.flush();
+
+
                 }
                 else if (content.getTypeofrequest() == 19) {
                     System.out.println(content.getSender() + "로 부터 본인이 팔로우하고 있는 사람 수 요청이 들어옴");
