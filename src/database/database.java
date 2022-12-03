@@ -68,6 +68,75 @@ public class database {
         return user_id;
     }
 
+    public int get_post_num(String id){
+        try{
+            int a = get_user_id(id);
+            String sql ="select count(post_id) from post where user_id = ?";
+            preparedstatement = con.prepareStatement(sql);
+            preparedstatement.setInt(1, a);
+            result = preparedstatement.executeQuery();
+            if(result.next()){
+                return result.getInt(1);
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+            return 0;
+        }
+        return 0;
+    }
+
+    public int get_follow_num(String id){
+        try{
+            String sql = "select count(follow_id) from follow where follower_id = ?";
+            int a = get_user_id(id);
+            preparedstatement = con.prepareStatement(sql);
+            preparedstatement.setInt(1, a);
+            result = preparedstatement.executeQuery();
+            if(result.next()){
+                return result.getInt(1);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public int get_follower_num(String id){
+        try{
+            String sql = "select count(follow_id) from follow where following_id = ?";
+            int a = get_user_id(id);
+            preparedstatement = con.prepareStatement(sql);
+            preparedstatement.setInt(1, a);
+            result = preparedstatement.executeQuery();
+            if(result.next()){
+                return result.getInt(1);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public boolean follow_check(String follower,String followee){
+        try{
+            String sql = "select follow_id from follow where follower_id = ? and following_id = ?";
+            int a = get_user_id(follower);
+            int b = get_user_id(followee);
+            preparedstatement = con.prepareStatement(sql);
+            preparedstatement.setInt(1, a);
+            preparedstatement.setInt(2, b);
+            result = preparedstatement.executeQuery();
+            if(result.next()){
+                return true;
+            }
+        }catch(Exception e){
+            System.out.println(e);
+            return false;
+        }
+        return false;
+    }
+
     public boolean follow_request(String sender,String follow){
         try{
             String sql1="INSERT INTO follow (follower_id,following_id) VALUES (?,?)";

@@ -1,2 +1,3 @@
-package chatting;public class request_server {
+package chatting;
+public class request_server {
 }

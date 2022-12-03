@@ -13,6 +13,12 @@ public class protocol implements Serializable {
     private String roomnumber;
     private String messege;
     private String time;
+
+    private int follow_num;
+
+    private int follower_num;
+
+    private int post_num;
     private boolean file_exist;
     private String file_name;
     private String error_type;
@@ -20,6 +26,7 @@ public class protocol implements Serializable {
     private String following;
     private String follow;
 
+    private boolean follow_yes_or_no;
 
     public protocol(){}
 
@@ -53,12 +60,17 @@ public class protocol implements Serializable {
         this.list = list;
     }
 
-    // 방에서 나가기 3, 팔로우 요청 7
+    // 방에서 나가기 3, 팔로우 요청 7 ,팔로우 여부 확인 9
     public protocol(int a, String b, String c){
         this.typeofrequest = a;
         this.sender = b;
         this.roomnumber = c;
         this.follow = c;
+    }
+
+    public protocol(int typeofrequest,int post_num){
+        this.typeofrequest = typeofrequest;
+        this.post_num = post_num;
     }
 
     // 메시지 보내기 4
@@ -109,8 +121,22 @@ public class protocol implements Serializable {
         return file_name;
     }
 
+    public int get_follower_num() {
+        return follower_num;
+    }
+
+    public int getFollow_num(){
+        return follow_num;
+    }
+
+
+    public boolean getFollowExist(){return follow_yes_or_no;}
     public String getFollow() {
         return follow;
+    }
+
+    public int getPostNum(){
+        return post_num;
     }
     public String getFollowing() {
         return following;
@@ -143,7 +169,7 @@ public class protocol implements Serializable {
     public void setFile_name(String file_name) {
         this.file_name = file_name;
     }
-}
 
+}
 
 

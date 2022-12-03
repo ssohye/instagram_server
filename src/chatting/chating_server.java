@@ -296,6 +296,30 @@ public class chating_server implements Runnable {
                         if(db.follow_cancel(content.getSender(), content.getFollow())==true){
                             System.out.println(sender+"가 "+content.getFollow()+"에게 팔로우 취소를 보냈습니다.");
                         }
+                    }else if(content.getTypeofrequest()==9){
+                        System.out.println(content.getSender()+"로부터 팔로우 확인 요청 들어옵ㅁ");
+                        String sender = content.getSender();
+                        if(db.follow_check(content.getSender(), content.getFollow())==true){
+                            System.out.println(sender+"가 "+content.getFollow()+"를 팔로우 하고 있습니다.");
+                            protocol tmp_content = new protocol(9,"server","true");
+                            ObjectOutputStream temp_oos = new ObjectOutputStream(socket.getOutputStream());
+                            temp_oos.writeObject(tmp_content);
+                            temp_oos.flush();
+                        }else {
+                            protocol tmp_content = new protocol(9,"server","false");
+                            ObjectOutputStream temp_oos = new ObjectOutputStream(socket.getOutputStream());
+                            temp_oos.writeObject(tmp_content);
+                            temp_oos.flush();
+                        }
+                    }else if(content.getTypeofrequest()==10){
+                        System.out.println(content.getSender()+"로 부터 게시물 개수 확인 요청이 들어옴");
+                        String sender = content.getSender();
+                        int post_num = db.get_post_num(content.getSender());
+                        protocol tmp_content = new protocol(10,post_num);
+                        ObjectOutputStream temp_oos = new ObjectOutputStream(socket.getOutputStream());
+                        temp_oos.writeObject(tmp_content);
+                        temp_oos.flush();
+
                     }
                     else if(content.getTypeofrequest()==11){
                         System.out.println(content.getSender()+"로 부터 방 목록 요청이 들어옴");
@@ -326,6 +350,25 @@ public class chating_server implements Runnable {
                         System.out.println(content.getSender() + "로 부터 전체 유저 목록 요청이 들어옴");
                         ArrayList<String> response = db.get_all_user_id();
                         protocol tmp_content = new protocol(16, "server", response);
+                        ObjectOutputStream temp_oos = new ObjectOutputStream(socket.getOutputStream());
+                        temp_oos.writeObject(tmp_content);
+                        temp_oos.flush();
+                    }else if(content.getTypeofrequest()==17){
+                        System.out.println(content.getSender()+"로 부터 게시물 업로드 요청 들어옴");
+                    }else if(content.getTypeofrequest()==19){
+                        System.out.println(content.getSender()+"로 부터 본인이 팔로우하고 있는 사람 수 요청이 들어옴");
+                        String sender=content.getSender();
+                        int following_num = db.get_follow_num(sender);
+                        protocol tmp_content = new protocol(19,following_num);
+                        ObjectOutputStream temp_oos = new ObjectOutputStream(socket.getOutputStream());
+                        temp_oos.writeObject(tmp_content);
+                        temp_oos.flush();
+
+                    }else if(content.getTypeofrequest()==20){
+                        System.out.println(content.getSender()+"로 부터 본인을 팔로우 하고 있는 사람 수 요청이 들어옴");
+                        String sender=content.getSender();
+                        int follower_num = db.get_follower_num(sender);
+                        protocol tmp_content = new protocol(20,follower_num);
                         ObjectOutputStream temp_oos = new ObjectOutputStream(socket.getOutputStream());
                         temp_oos.writeObject(tmp_content);
                         temp_oos.flush();
