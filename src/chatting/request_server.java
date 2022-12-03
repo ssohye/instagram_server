@@ -156,6 +156,9 @@ public class request_server implements Runnable {
                     String post_photo_name=db.get_post_photo_name(post_id);
                     ArrayList<String> tag=null;
                     ArrayList<Integer> hashtag_id=db.get_post_hashtag_id(post_id);
+                    for(int i=0; i<hashtag_id.size(); i++){
+                        tag.add(db.get_tag(hashtag_id.get(i)));
+                    }
 
                     protocol tmp_content = new protocol(18, "server", post_content,tag,post_photo_name);
                     ObjectOutputStream temp_oos = new ObjectOutputStream(socket.getOutputStream());

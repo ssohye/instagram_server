@@ -131,6 +131,21 @@ public class database {
         return hashtag_id;
     }
 
+    public String get_tag(int hashtag_id){
+        try{
+            String sql="select hashtag from hashtag where hashtag_id=?";
+            preparedstatement = con.prepareStatement(sql);
+            preparedstatement.setInt(1,hashtag_id);
+            result = preparedstatement.executeQuery();
+            if(result.next()){
+                return result.getString("hashtag");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 
     public boolean new_post(String sender,String msg,String path,ArrayList<String> tag){
         try{
