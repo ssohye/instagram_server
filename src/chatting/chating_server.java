@@ -329,7 +329,7 @@ public class chating_server implements Runnable {
                             System.out.println("방 목록 : "+response.get(i));
                         }
 
-                        protocol tmp_content = new protocol(12,"server",response);
+                        protocol tmp_content = new protocol(11,"server",response);
                         ObjectOutputStream temp_oos = new ObjectOutputStream(socket.getOutputStream());
                         temp_oos.writeObject(tmp_content);
                         temp_oos.flush();
@@ -355,23 +355,6 @@ public class chating_server implements Runnable {
                         temp_oos.flush();
                     }else if(content.getTypeofrequest()==17){
                         System.out.println(content.getSender()+"로 부터 게시물 업로드 요청 들어옴");
-                    }else if(content.getTypeofrequest()==19){
-                        System.out.println(content.getSender()+"로 부터 본인이 팔로우하고 있는 사람 수 요청이 들어옴");
-                        String sender=content.getSender();
-                        int following_num = db.get_follow_num(sender);
-                        protocol tmp_content = new protocol(19,following_num);
-                        ObjectOutputStream temp_oos = new ObjectOutputStream(socket.getOutputStream());
-                        temp_oos.writeObject(tmp_content);
-                        temp_oos.flush();
-
-                    }else if(content.getTypeofrequest()==20){
-                        System.out.println(content.getSender()+"로 부터 본인을 팔로우 하고 있는 사람 수 요청이 들어옴");
-                        String sender=content.getSender();
-                        int follower_num = db.get_follower_num(sender);
-                        protocol tmp_content = new protocol(20,follower_num);
-                        ObjectOutputStream temp_oos = new ObjectOutputStream(socket.getOutputStream());
-                        temp_oos.writeObject(tmp_content);
-                        temp_oos.flush();
                     }
                     else {
                         System.out.println("잘못된 요청입니다.");

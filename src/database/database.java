@@ -76,6 +76,7 @@ public class database {
             preparedstatement.setInt(1, a);
             result = preparedstatement.executeQuery();
             if(result.next()){
+                System.out.println(id+"의 포스트수: "+result.getInt(1));
                 return result.getInt(1);
             }
 
@@ -94,6 +95,7 @@ public class database {
             preparedstatement.setInt(1, a);
             result = preparedstatement.executeQuery();
             if(result.next()){
+                System.out.println(id+"의 팔로잉수: "+result.getInt(1));
                 return result.getInt(1);
             }
         }catch (Exception e){
@@ -110,6 +112,7 @@ public class database {
             preparedstatement.setInt(1, a);
             result = preparedstatement.executeQuery();
             if(result.next()){
+                System.out.println(id+"의 팔로워수: "+result.getInt(1));
                 return result.getInt(1);
             }
         }catch (Exception e){
