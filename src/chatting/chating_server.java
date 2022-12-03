@@ -190,34 +190,34 @@ public class chating_server implements Runnable {
                         }
 
                     } else if (content.getTypeofrequest() == 2) { //방에 유저 초대
-                            if(db.invite_user_to_room(db.get_user_id(content.getSender()),content.getRoomnumber(),content.getList())==true){
-                                System.out.println(content.getSender()+"가 요청한 초대 기능이 정상 작동함");
-                                for(int i=0; i<online_user_list.size(); i++){
-                                    for(int j=0; j<content.getList().size(); j++){
-                                        if(online_user_list.get(i).user_id==db.get_user_id(content.getList().get(j))){
-                                            connection A = new connection(content.getRoomnumber(),online_user_list.get(i).user_id,online_user_list.get(i).socket);
-                                            boolean isduplicated = false;
-                                            for (int k = 0; k < connection_list.size(); k++) {
-                                                connection t = connection_list.get(k);
-                                                if (t.room_id.equals(A.room_id) && t.user_id == A.user_id) {
-                                                    System.out.println("이미 연결정보에 등록됨");
-                                                    isduplicated = true;
-                                                    break;
-                                                }
+                        if(db.invite_user_to_room(db.get_user_id(content.getSender()),content.getRoomnumber(),content.getList())==true){
+                            System.out.println(content.getSender()+"가 요청한 초대 기능이 정상 작동함");
+                            for(int i=0; i<online_user_list.size(); i++){
+                                for(int j=0; j<content.getList().size(); j++){
+                                    if(online_user_list.get(i).user_id==db.get_user_id(content.getList().get(j))){
+                                        connection A = new connection(content.getRoomnumber(),online_user_list.get(i).user_id,online_user_list.get(i).socket);
+                                        boolean isduplicated = false;
+                                        for (int k = 0; k < connection_list.size(); k++) {
+                                            connection t = connection_list.get(k);
+                                            if (t.room_id.equals(A.room_id) && t.user_id == A.user_id) {
+                                                System.out.println("이미 연결정보에 등록됨");
+                                                isduplicated = true;
+                                                break;
                                             }
-                                            if (isduplicated == false) {
-                                                System.out.println("연결정보에 추가됨");
-                                                connection_list.add(A);
-                                            }else {
+                                        }
+                                        if (isduplicated == false) {
+                                            System.out.println("연결정보에 추가됨");
+                                            connection_list.add(A);
+                                        }else {
 
-                                            }
                                         }
                                     }
                                 }
                             }
-                            else {
-                                System.out.println("방 초대 실패");
-                            }
+                        }
+                        else {
+                            System.out.println("방 초대 실패");
+                        }
                     } else if (content.getTypeofrequest() == 3) { //방에서 나가긴데
                         for (int i = 0; i < connection_list.size(); i++) {
                             if (connection_list.get(i).user_id == db.get_user_id(content.getSender()) && connection_list.get(i).room_id.equals(content.getRoomnumber())) {
@@ -255,14 +255,14 @@ public class chating_server implements Runnable {
                         }
                         for (int i = 0; i < connection_list.size(); i++) {
                             try{
-                            if (connection_list.get(i).room_id.equals(room_id)) {
-                                System.out.println("room_id: "+room_id);
-                                System.out.println("방에 있는 사람들에게 메세지 전송");
-                                Socket temp_socket = connection_list.get(i).socket;
-                                ObjectOutputStream temp_oos = new ObjectOutputStream(temp_socket.getOutputStream());
-                                temp_oos.writeObject(content);
-                                temp_oos.flush();
-                            }
+                                if (connection_list.get(i).room_id.equals(room_id)) {
+                                    System.out.println("room_id: "+room_id);
+                                    System.out.println("방에 있는 사람들에게 메세지 전송");
+                                    Socket temp_socket = connection_list.get(i).socket;
+                                    ObjectOutputStream temp_oos = new ObjectOutputStream(temp_socket.getOutputStream());
+                                    temp_oos.writeObject(content);
+                                    temp_oos.flush();
+                                }
                             }catch (Exception e){
                                 continue;
                             }
