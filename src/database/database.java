@@ -68,6 +68,14 @@ public class database {
         return user_id;
     }
 
+    public boolean new_post(String sender,String msg){
+        try{
+            String sql="INSERT INTO post (user_id,content) VALUES (?,?)";
+            
+        }
+
+    }
+
     public int get_post_num(String id){
         try{
             int a = get_user_id(id);

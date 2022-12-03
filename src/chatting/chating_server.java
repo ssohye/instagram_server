@@ -355,6 +355,11 @@ public class chating_server implements Runnable {
                         temp_oos.flush();
                     }else if(content.getTypeofrequest()==17){
                         System.out.println(content.getSender()+"로 부터 게시물 업로드 요청 들어옴");
+                        String sender=content.getSender();
+                        ArrayList<String> tag =content.getList();
+                        String post_content= content.getMessage();
+                        String post_photo_name=content.getFile_name();
+
                     }
                     else {
                         System.out.println("잘못된 요청입니다.");
