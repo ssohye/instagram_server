@@ -191,6 +191,21 @@ public class database {
 
     }
 
+    public String get_post_writer(String post_id){
+        try{
+            String sql="select user_id from post where post_id=?";
+            preparedstatement = con.prepareStatement(sql);
+            preparedstatement.setInt(1,Integer.parseInt(post_id));
+            result = preparedstatement.executeQuery();
+            if(result.next()){
+                return get_user_id_as_String(result.getInt("user_id"));
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public boolean tag_exist(String tag){
         try{
             String sql ="select count(hashtag_id) from hashtag where hashtag=?";

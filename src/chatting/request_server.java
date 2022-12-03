@@ -160,7 +160,7 @@ public class request_server implements Runnable {
                         tag.add(db.get_tag(hashtag_id.get(i)));
                     }
 
-                    protocol tmp_content = new protocol(18, "server", post_content,tag,post_photo_name);
+                    protocol tmp_content = new protocol(18, post_id, post_content,tag,post_photo_name);
                     ObjectOutputStream temp_oos = new ObjectOutputStream(socket.getOutputStream());
                     temp_oos.writeObject(tmp_content);
                     temp_oos.flush();
@@ -184,7 +184,16 @@ public class request_server implements Runnable {
                     ObjectOutputStream temp_oos = new ObjectOutputStream(socket.getOutputStream());
                     temp_oos.writeObject(tmp_content);
                     temp_oos.flush();
-                } else {
+                }else if(content.getTypeofrequest()==21){
+                    System.out.println(content.getSender()+"로부터 글의 작성자 확인 요청이 들어옴");
+                    String post_id=content.getSender();
+                    String writer=db.get_post_writer(post_id);
+                    protocol tmp_content = new protocol(21, writer);
+                    ObjectOutputStream temp_oos = new ObjectOutputStream(socket.getOutputStream());
+                    temp_oos.writeObject(tmp_content);
+                    temp_oos.flush();
+                }
+                else {
                     System.out.println("잘못된 요청입니다.");
                 }
 
