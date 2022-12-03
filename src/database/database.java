@@ -1,6 +1,7 @@
 package database;
 import chatting.protocol;
 import com.mysql.cj.protocol.Resultset;
+import com.mysql.cj.util.DnsSrv;
 import encryption.*;
 
 import java.io.InputStreamReader;
@@ -68,12 +69,98 @@ public class database {
         return user_id;
     }
 
-    public boolean new_post(String sender,String msg){
+    public boolean new_post(String sender,String msg,String path,ArrayList<String> tag){
         try{
             String sql="INSERT INTO post (user_id,content) VALUES (?,?)";
-            
-        }
+            String sql2="select post_id from post where user_id=? and content=?";
+            String sql3="select hashtag_id from hashtag where hashtag=?";
+            int a =get_user_id(sender);
+            preparedstatement =con.prepareStatement(sql);
+            preparedstatement.setInt(1,a);
+            preparedstatement.setString(2,msg);
+            preparedstatement.executeUpdate();
+            preparedstatement=con.prepareStatement(sql2);
+            preparedstatement.setInt(1,a);
+            preparedstatement.setString(2,msg);
+            result=preparedstatement.executeQuery();
+            result.next();
+            int post_id=result.getInt(1);
+            new_photo(path,post_id);
+            for(int i=0;i<tag.size(); i++){
+                if(tag_exist(tag.get(i))==false){
+                    add_tag(tag.get(i));
+                }else {
+                    preparedstatement =con.prepareStatement(sql3);
+                    preparedstatement.setString(1,tag.get(i));
+                    result=preparedstatement.executeQuery();
+                    result.next();
+                    int hashtag_id=result.getInt(1);
+                    new_post_hashtag(post_id,hashtag_id);
+                }
+            }
 
+            
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return false;
+
+    }
+
+    public boolean tag_exist(String tag){
+        try{
+            String sql ="select hashtag_id from hashtag where hashtag=?";
+
+            preparedstatement =con.prepareStatement(sql);
+            preparedstatement.setString(1,tag);
+            result=preparedstatement.executeQuery();
+            result.next();
+            return true;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean new_post_hashtag(int post_id,int hashtag_id){
+        try{
+            String sql ="insert into post_hashtag (post_id,hashtag_id2) values(?,?)";
+            preparedstatement =con.prepareStatement(sql);
+            preparedstatement.setInt(1,post_id);
+            preparedstatement.setInt(2,hashtag_id);
+            preparedstatement.executeUpdate();
+            return true;
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean add_tag(String hashtag){
+        try{
+            String sql = "insert into hashtag (hashtag) values(?)";
+            preparedstatement=con.prepareStatement(sql);
+            preparedstatement.setString(1,hashtag);
+            preparedstatement.executeUpdate();
+            return true;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean new_photo(String path,int post_id){
+        try{
+            String sql="insert into image(file_name,post_id) values(?,?)";
+            preparedstatement = con.prepareStatement(sql);
+            preparedstatement.setString(1,path);
+            preparedstatement.setInt(2,post_id);
+            preparedstatement.executeUpdate();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return false;
     }
 
     public int get_post_num(String id){
