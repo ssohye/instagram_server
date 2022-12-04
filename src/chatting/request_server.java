@@ -201,9 +201,9 @@ public class request_server implements Runnable {
                     temp_oos.writeObject(tmp_content);
                     temp_oos.flush();
                 }else if(content.getTypeofrequest()==23){
-                    System.out.println(content.getSender()+"로 부터 글의 좋아요 개수 요청이 들어옴");
                     String post_id=content.getSender();
                     int like_num=db.get_like_num(post_id);
+                    System.out.println(content.getSender()+"로 부터 글의 좋아요 개수:"+like_num+" 요청");
                     protocol tmp_content = new protocol(23, like_num);
                     ObjectOutputStream temp_oos = new ObjectOutputStream(socket.getOutputStream());
                     temp_oos.writeObject(tmp_content);
@@ -225,7 +225,7 @@ public class request_server implements Runnable {
                     temp_oos.flush();
                     
                 }else if(content.getTypeofrequest()==50) {//좋아요 요청
-                    System.out.println(content.getSender()+"로부터 좋아요 요청이 들어옴");
+                    System.out.println("좋아요 요청50:"+content.getSender()+"로부터 좋아요 요청이 들어옴");
                     String sender=content.getSender();
                     String post_id=content.getFeed_id();
                     boolean like = db.is_liked(sender,post_id);
