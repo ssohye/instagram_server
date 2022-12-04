@@ -192,7 +192,24 @@ public class request_server implements Runnable {
                     ObjectOutputStream temp_oos = new ObjectOutputStream(socket.getOutputStream());
                     temp_oos.writeObject(tmp_content);
                     temp_oos.flush();
-                }else if(content.getTypeofrequest()==49){//좋아요 확인요청
+                }else if(content.getTypeofrequest()==22){
+                    System.out.println(content.getSender()+"로 부터 본인 게시물 목록 요청");
+                    String sender=content.getSender();
+                    ArrayList<String> response=db.get_user_post_id(sender);
+                    protocol tmp_content = new protocol(22, "server", response);
+                    ObjectOutputStream temp_oos = new ObjectOutputStream(socket.getOutputStream());
+                    temp_oos.writeObject(tmp_content);
+                    temp_oos.flush();
+                }else if(content.getTypeofrequest()==23){
+                    System.out.println(content.getSender()+"로 부터 글의 좋아요 개수 요청이 들어옴");
+                    String post_id=content.getSender();
+                    int like_num=db.get_like_num(post_id);
+                    protocol tmp_content = new protocol(23, like_num);
+                    ObjectOutputStream temp_oos = new ObjectOutputStream(socket.getOutputStream());
+                    temp_oos.writeObject(tmp_content);
+                    temp_oos.flush();
+                }
+                else if(content.getTypeofrequest()==49){//좋아요 확인요청
                     System.out.println(content.getSender()+"로부터 좋아요 확인 요청이 들어옴");
                     String sender=content.getSender();
                     boolean like= db.is_liked(sender,content.getFeed_id());
@@ -208,13 +225,16 @@ public class request_server implements Runnable {
                     temp_oos.flush();
                     
                 }else if(content.getTypeofrequest()==50) {//좋아요 요청
+                    System.out.println(content.getSender()+"로부터 좋아요 요청이 들어옴");
                     String sender=content.getSender();
                     String post_id=content.getFeed_id();
                     boolean like = db.is_liked(sender,post_id);
                     if(like==true) {
                         db.delete_like(sender, post_id);
+                        System.out.println("좋아요 삭제");
                     }else {
                         db.like(sender, post_id);
+                        System.out.println("좋아요 추가");
                     }
                     protocol tmp_content = new protocol(50, "success");
                     ObjectOutputStream temp_oos = new ObjectOutputStream(socket.getOutputStream());

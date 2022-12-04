@@ -17,7 +17,7 @@ import java.io.File;
 import java.util.concurrent.ExecutionException;
 
 public class database {
-    String url = "jdbc:mysql://swiftsjh.tplinkdns.com:3306/insta?autoReconnect=true";
+    String url = "jdbc:mysql://localhost:3306/insta?autoReconnect=true&&serverTimezone=UTC";
     String userName = "dmz";
     String password = "1234";
     Connection con = null;
@@ -52,6 +52,40 @@ public class database {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public ArrayList<String> get_user_post_id(String user_id){
+        ArrayList<String> post_id_list=new ArrayList<>();
+        try{
+            int a= get_user_id(user_id);
+            String sql="select post_id from post where user_id=?";
+            preparedstatement=con.prepareStatement(sql);
+            preparedstatement.setInt(1,a);
+            result=preparedstatement.executeQuery();
+            while(result.next()){
+                post_id_list.add(String.valueOf(result.getInt("post_id")));
+            }
+            return post_id_list;
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public int get_like_num(String post_id){
+        try {
+            String sql = "select count(user_post_like_id) from user_post_like where post_id=?";
+            preparedstatement = con.prepareStatement(sql);
+            preparedstatement.setInt(1, Integer.parseInt(post_id));
+            result = preparedstatement.executeQuery();
+            if (result.next()) {
+                return result.getInt(1);
+            }
+            return -1;
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return -1;
     }
 
     public boolean like(String user_id,String post_id){
