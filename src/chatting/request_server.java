@@ -212,14 +212,10 @@ public class request_server implements Runnable {
                 else if(content.getTypeofrequest()==49){//좋아요 확인요청
                     System.out.println(content.getSender()+"로부터 좋아요 확인 요청이 들어옴");
                     String sender=content.getSender();
-                    boolean like= db.is_liked(sender,content.getFeed_id());
-                    String result;
-                    if(like==true){
-                        result="true";
-                    }else{
-                        result="false";
-                    }
-                    protocol tmp_content = new protocol(49, result);
+                    boolean like=false;
+                    like= db.is_liked(sender,content.getFeed_id());
+
+                    protocol tmp_content = new protocol(49, like);
                     ObjectOutputStream temp_oos = new ObjectOutputStream(socket.getOutputStream());
                     temp_oos.writeObject(tmp_content);
                     temp_oos.flush();
