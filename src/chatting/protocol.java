@@ -13,25 +13,18 @@ public class protocol implements Serializable {
     private String roomnumber;
     private String messege;
     private String time;
-
     private String heart;
-
     private int follow_num;
-
     private int follower_num;
-
     private int num;
     private boolean file_exist;
     private String file_name;
     private String error_type;
     private String feed_id;
-
     private String following;
     private String follow;
-
     private String message;
     private boolean follow_yes_or_no;
-
     public protocol(){}
 
     // 요청 프로토콜
@@ -138,24 +131,15 @@ public class protocol implements Serializable {
     public int get_follower_num() {
         return num;
     }
-
     public int getFollow_num(){
         return num;
     }
-
-    public String getHeart(){
-        return heart;
-    }
-    public String getFeed_id(){
-        return feed_id;
-    }
-
-
+    public String getHeart(){return heart;}
+    public String getFeed_id(){return feed_id;}
     public boolean getFollowExist(){return follow_yes_or_no;}
     public String getFollow() {
         return follow;
     }
-
     public int getPostNum(){
         return num;
     }
@@ -164,31 +148,10 @@ public class protocol implements Serializable {
     }
 
     //make setter function
-    public void setTypeofrequest(int typeofrequest) {
-        this.typeofrequest = typeofrequest;
-    }
-    public void setList(ArrayList<String> list) {
-        this.list = list;
-    }
-    public void setSender(String sender) {
-        this.sender = sender;
-    }
-    public void setRoomnumber(String roomnumber) {
-        this.roomnumber = roomnumber;
-    }
-    public void setMessege(String messege) {
-        this.messege = messege;
-    }
     public void setTime() {
         LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
         this.time = now.format(formatter);
     }
-    public void setFile_exist(boolean file_exist) {
-        this.file_exist = file_exist;
-    }
-    public void setFile_name(String file_name) {
-        this.file_name = file_name;
-    }
-
 }
+
