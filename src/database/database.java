@@ -54,6 +54,39 @@ public class database {
         }
     }
 
+    public boolean like(String user_id,String post_id){
+        try{
+            String sql="insert into user_post_like (user_id,post_id) values(?,?)";
+            preparedstatement=con.prepareStatement(sql);
+            preparedstatement.setInt(1,get_user_id(user_id));
+            preparedstatement.setInt(2,Integer.parseInt(post_id));
+            preparedstatement.executeUpdate();
+            return true;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean is_liked(String user_id,String post_id){
+        try{
+            String sql="select count(*) from user_post_like where user_id=? and post_id=?";
+            preparedstatement=con.prepareStatement(sql);
+            preparedstatement.setInt(1,get_user_id(user_id));
+            preparedstatement.setInt(2,Integer.parseInt(post_id));
+            result=preparedstatement.executeQuery();
+            result.next();
+            if(result.getInt(1)==0) {
+                return false;
+            }else{
+                return true;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public int get_user_id(String id){
         int user_id = -1;
         try{

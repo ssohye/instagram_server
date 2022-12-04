@@ -192,6 +192,25 @@ public class request_server implements Runnable {
                     ObjectOutputStream temp_oos = new ObjectOutputStream(socket.getOutputStream());
                     temp_oos.writeObject(tmp_content);
                     temp_oos.flush();
+                }else if(content.getTypeofrequest()==49){//좋아요 확인요청
+                    System.out.println(content.getSender()+"로부터 좋아요 확인 요청이 들어옴");
+                    String sender=content.getSender();
+                    boolean like= db.is_liked(sender,content.getFeed_id());
+                    String result;
+                    if(like==true){
+                        result="true";
+                    }else{
+                        result="false";
+                    }
+                    protocol tmp_content = new protocol(49, result);
+                    ObjectOutputStream temp_oos = new ObjectOutputStream(socket.getOutputStream());
+                    temp_oos.writeObject(tmp_content);
+
+                    
+                }else if(content.getTypeofrequest()==50) {//좋아요 요청
+                    String sender=content.getSender();
+                    String post_id=content.getFeed_id();
+                    db.like(sender,post_id);
                 }
                 else {
                     System.out.println("잘못된 요청입니다.");

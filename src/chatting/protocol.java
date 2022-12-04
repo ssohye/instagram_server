@@ -14,6 +14,8 @@ public class protocol implements Serializable {
     private String messege;
     private String time;
 
+    private String heart;
+
     private int follow_num;
 
     private int follower_num;
@@ -22,6 +24,7 @@ public class protocol implements Serializable {
     private boolean file_exist;
     private String file_name;
     private String error_type;
+    private String feed_id;
 
     private String following;
     private String follow;
@@ -85,10 +88,11 @@ public class protocol implements Serializable {
         this.file_name = file_name;
     }
 
-    // 로그아웃 5, 팔로워, 팔로잉 목록 불러오기 요청 9, 10
+    // 로그아웃 5, 팔로워, 팔로잉 목록 불러오기 요청 9, 10, 49
     public protocol(int typeofrequest, String sender) {
         this.typeofrequest = typeofrequest;
         this.sender = sender;
+        this.heart = sender;
     }
     //게시물 전용
     public protocol(int typeofrequest, String sender, String message, ArrayList<String> tag, String file) {
@@ -139,6 +143,13 @@ public class protocol implements Serializable {
         return num;
     }
 
+    public String getHeart(){
+        return heart;
+    }
+    public String getFeed_id(){
+        return feed_id;
+    }
+
 
     public boolean getFollowExist(){return follow_yes_or_no;}
     public String getFollow() {
@@ -181,4 +192,3 @@ public class protocol implements Serializable {
     }
 
 }
-
