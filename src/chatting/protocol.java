@@ -63,6 +63,7 @@ public class protocol implements Serializable {
         this.sender = b;
         this.roomnumber = c;
         this.follow = c;
+        this.feed_id = c;
     }
 
     public protocol(int typeofrequest,int num){
@@ -154,4 +155,3 @@ public class protocol implements Serializable {
         this.time = now.format(formatter);
     }
 }
-

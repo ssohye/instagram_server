@@ -205,12 +205,21 @@ public class request_server implements Runnable {
                     protocol tmp_content = new protocol(49, result);
                     ObjectOutputStream temp_oos = new ObjectOutputStream(socket.getOutputStream());
                     temp_oos.writeObject(tmp_content);
-
+                    temp_oos.flush();
                     
                 }else if(content.getTypeofrequest()==50) {//좋아요 요청
                     String sender=content.getSender();
                     String post_id=content.getFeed_id();
-                    db.like(sender,post_id);
+                    boolean like = db.is_liked(sender,post_id);
+                    if(like==true) {
+                        db.delete_like(sender, post_id);
+                    }else {
+                        db.like(sender, post_id);
+                    }
+                    protocol tmp_content = new protocol(50, "success");
+                    ObjectOutputStream temp_oos = new ObjectOutputStream(socket.getOutputStream());
+                    temp_oos.writeObject(tmp_content);
+                    temp_oos.flush();
                 }
                 else {
                     System.out.println("잘못된 요청입니다.");
